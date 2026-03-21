@@ -1,0 +1,3618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NW Engineering Calculation Tools v5.1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f9fafb;
+            padding: 16px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #1a56db;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            background: #f3f4f6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            min-width: 80px;
+        }
+
+        .tab-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .tab-btn.active {
+            border-color: #1a56db;
+            background: #eff6ff;
+            color: #1a56db;
+            font-weight: 600;
+        }
+
+        .tab-btn .icon {
+            font-size: 24px;
+        }
+
+        .content {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a56db;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eff6ff;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .label-with-unit {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .label-with-unit label {
+            margin-bottom: 0;
+        }
+
+        .unit {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #1a56db;
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+
+        .input-field {
+            background: #e3f0ff;
+            border-color: #3b82f6;
+        }
+
+        .output-field {
+            background: #e6f9ed;
+            border-color: #10b981;
+        }
+
+        .output-field:disabled {
+            background: #e6f9ed;
+            color: #047857;
+            cursor: default;
+        }
+
+        .info-field {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            color: #6b7280;
+        }
+
+        .info-field:disabled {
+            background: #f3f4f6;
+        }
+
+        .formula {
+            font-size: 12px;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .status {
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .status.pass {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status.fail {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 2px solid #ef4444;
+        }
+
+        .status::before {
+            margin-right: 6px;
+        }
+
+        .status.pass::before {
+            content: "✓ ";
+        }
+
+        .status.fail::before {
+            content: "✗ ";
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .result-table th {
+            background: #f3f4f6;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .result-table td {
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .result-table tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1a56db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            padding: 12px;
+            border-radius: 6px;
+            color: #92400e;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 6px;
+            color: #1e40af;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+            .tab-btn {
+                min-width: 70px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NW Engineering Calculation Tools v5.1</h1>
+            <p>Network Engineering Calculation Tools</p>
+        </header>
+
+        <div class="tab-bar" id="tabBar">
+            <button class="tab-btn active" data-tab="unit-conversion">
+                <span class="icon">🔄</span>
+                <span>Unit Conv</span>
+            </button>
+            <button class="tab-btn" data-tab="lng-rop">
+                <span class="icon">📦</span>
+                <span>LNG ROP</span>
+            </button>
+            <button class="tab-btn" data-tab="hydrogen">
+                <span class="icon">⚗️</span>
+                <span>Hydrogen</span>
+            </button>
+            <button class="tab-btn" data-tab="linepack">
+                <span class="icon">🏗️</span>
+                <span>Linepack</span>
+            </button>
+            <button class="tab-btn" data-tab="pressure-drop">
+                <span class="icon">💨</span>
+                <span>Pressure Drop</span>
+            </button>
+            <button class="tab-btn" data-tab="gas-flow">
+                <span class="icon">🌬️</span>
+                <span>Gas Flow</span>
+            </button>
+            <button class="tab-btn" data-tab="blowdown">
+                <span class="icon">💥</span>
+                <span>Blow Down</span>
+            </button>
+            <button class="tab-btn" data-tab="maop">
+                <span class="icon">🔩</span>
+                <span>MAOP</span>
+            </button>
+            <button class="tab-btn" data-tab="wall-thickness">
+                <span class="icon">📏</span>
+                <span>Wall Thick</span>
+            </button>
+            <button class="tab-btn" data-tab="hoop-stress">
+                <span class="icon">⚡</span>
+                <span>Hoop Stress</span>
+            </button>
+            <button class="tab-btn" data-tab="cathodic">
+                <span class="icon">🛡️</span>
+                <span>Cathodic</span>
+            </button>
+            <button class="tab-btn" data-tab="psv">
+                <span class="icon">🔐</span>
+                <span>PSV Sizing</span>
+            </button>
+            <button class="tab-btn" data-tab="lng-bor">
+                <span class="icon">🧊</span>
+                <span>LNG BOR</span>
+            </button>
+            <button class="tab-btn" data-tab="remaining-life">
+                <span class="icon">📅</span>
+                <span>Remaining Life</span>
+            </button>
+        </div>
+
+        <div class="content">
+            <!-- TAB 1: Unit Conversion -->
+            <div id="unit-conversion" class="tab-content active">
+                <div class="section">
+                    <h2 class="section-title">LNG Conversion</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>LNG Density</label>
+                                <span class="unit">kg/m³</span>
+                            </div>
+                            <input type="number" class="input-field" id="lng-density" value="450" step="0.1">
+                        </div>
+                    </div>
+                    <div class="info-box">Constants: 1 tonne LNG = 1300 Nm³ = 1371.389 Sm³</div>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Mass</label>
+                                <span class="unit">kg</span>
+                            </div>
+                            <input type="number" class="input-field" id="lng-kg" placeholder="Enter kg">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Volume (Sm³)</label>
+                                <span class="unit">Sm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="lng-sm3" readonly>
+                            <div class="formula">Sm³ = kg × 1371.389/1000</div>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Volume (Nm³)</label>
+                                <span class="unit">Nm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="lng-nm3" readonly>
+                            <div class="formula">Nm³ = kg × 1300/1000</div>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Tonnage</label>
+                                <span class="unit">tonne</span>
+                            </div>
+                            <input type="number" class="output-field" id="lng-tonne" readonly>
+                            <div class="formula">tonne = kg / 1000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">NG Unit Conversion</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>HHV</label>
+                                <span class="unit">Btu/Sft³</span>
+                            </div>
+                            <input type="number" class="input-field" id="hhv-value" value="978" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>MMSCF</label>
+                                <span class="unit">MMSCF</span>
+                            </div>
+                            <input type="number" class="input-field" id="mmscf-value" placeholder="Enter MMSCF">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>to Sm³</label>
+                                <span class="unit">Sm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="mmscf-to-sm3" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>MMBtu</label>
+                                <span class="unit">MMBtu</span>
+                            </div>
+                            <input type="number" class="input-field" id="mmbtu-value" placeholder="Enter MMBtu">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>to Sm³</label>
+                                <span class="unit">Sm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="mmbtu-to-sm3" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Sm³</label>
+                                <span class="unit">Sm³</span>
+                            </div>
+                            <input type="number" class="input-field" id="sm3-value" placeholder="Enter Sm³">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>to MMSCF</label>
+                                <span class="unit">MMSCF</span>
+                            </div>
+                            <input type="number" class="output-field" id="sm3-to-mmscf" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>to MMBtu</label>
+                                <span class="unit">MMBtu</span>
+                            </div>
+                            <input type="number" class="output-field" id="sm3-to-mmbtu" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: LNG ROP -->
+            <div id="lng-rop" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Inputs</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Working Hours per Day</label>
+                                <span class="unit">h</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-work-hours" value="8" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Working Days per Year</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-work-days" value="350" step="1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Safety Stock</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-safety-stock" value="1" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Lead Time</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-lead-time" value="1" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Consumption Rate</label>
+                                <span class="unit">MMBtu/day</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-consumption" value="162" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Tank Capacity</label>
+                                <span class="unit">tonne</span>
+                            </div>
+                            <input type="number" class="input-field" id="rop-tank-capacity" value="21.3354" step="0.0001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Daily Consumption</label>
+                                <span class="unit">tonne/day</span>
+                            </div>
+                            <input type="number" class="output-field" id="rop-daily-consumption" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Annual Consumption</label>
+                                <span class="unit">tonne/yr</span>
+                            </div>
+                            <input type="number" class="output-field" id="rop-annual-consumption" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Re-Order Point</label>
+                                <span class="unit">tonne</span>
+                            </div>
+                            <input type="number" class="output-field" id="rop-value" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>ROP % of Capacity</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="rop-percent" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Days of Supply</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="output-field" id="rop-days-supply" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="rop-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Hydrogen -->
+            <div id="hydrogen" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Gas Constants</h2>
+                    <div class="info-box">
+                        NG LHV: 255.89 MJ/Nm³ | H₂ LHV: 10.806 MJ/Nm³<br>
+                        NG HHV: 283.49 MJ/Nm³ | H₂ HHV: 12.780 MJ/Nm³<br>
+                        NG Density: 0.628 kg/Sm³ | H₂ Density: 0.0899 kg/Sm³
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Inputs</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>H₂ Volume %</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="input-field" id="h2-vol-percent" value="5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Working Hours/Day</label>
+                                <span class="unit">h</span>
+                            </div>
+                            <input type="number" class="input-field" id="h2-work-hours" value="24" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Working Days/Year</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="input-field" id="h2-work-days" value="365" step="1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Annual Consumption</label>
+                                <span class="unit">MMBtu/year</span>
+                            </div>
+                            <input type="number" class="input-field" id="h2-annual-consumption" value="10000" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Truck Capacity</label>
+                                <span class="unit">kg H₂</span>
+                            </div>
+                            <input type="number" class="input-field" id="h2-truck-capacity" value="20" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Blended Gas Properties</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>NG Volume %</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-ng-vol-percent" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Blended LHV</label>
+                                <span class="unit">MJ/Nm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-blended-lhv" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Blended HHV</label>
+                                <span class="unit">MJ/Nm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-blended-hhv" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Consumption Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Consumption Rate (MMBtu/h)</label>
+                                <span class="unit">MMBtu/h</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-consumption-mmbtu-hr" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Consumption (Nm³/h)</label>
+                                <span class="unit">Nm³/h</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-consumption-nm3-hr" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>H₂ Consumption</label>
+                                <span class="unit">kg H₂/hr</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-consumption-kg-hr" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Daily H₂ Consumption</label>
+                                <span class="unit">kg H₂/day</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-consumption-kg-day" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Time Between Orders</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="output-field" id="h2-time-between-orders" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Linepack -->
+            <div id="linepack" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Inputs</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Pipe Type</label>
+                            <select class="input-field" id="lp-pipe-type">
+                                <option>STEEL</option>
+                                <option>HDPE</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="lp-nps">
+                                <option value="">Select Size</option>
+                                <option value="2">2"</option>
+                                <option value="4">4"</option>
+                                <option value="6">6"</option>
+                                <option value="8">8"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Schedule</label>
+                            <select class="input-field" id="lp-schedule">
+                                <option value="">Select Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Operating Pressure</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="lp-pressure" value="5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Operating Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="lp-temp" value="15.5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Length</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="input-field" id="lp-length" value="600" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Compressibility Z</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="lp-z" value="0.9867" step="0.0001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Linepack Volume</label>
+                                <span class="unit">Sm³</span>
+                            </div>
+                            <input type="number" class="output-field" id="lp-volume-sm3" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Linepack Volume</label>
+                                <span class="unit">ft³</span>
+                            </div>
+                            <input type="number" class="output-field" id="lp-volume-ft3" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Linepack Energy</label>
+                                <span class="unit">MMBtu</span>
+                            </div>
+                            <input type="number" class="output-field" id="lp-volume-mmbtu" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: Pressure Drop -->
+            <div id="pressure-drop" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Gas Properties</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Specific Gravity (air=1)</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-sg" value="0.6" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-temp" value="15.5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Compressibility Z</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-z" value="0.9867" step="0.0001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Pipe Configuration</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Pipe Type</label>
+                            <select class="input-field" id="pd-pipe-type">
+                                <option>STEEL</option>
+                                <option>HDPE</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="pd-nps">
+                                <option value="">Select Size</option>
+                                <option value="2">2"</option>
+                                <option value="4">4"</option>
+                                <option value="6">6"</option>
+                                <option value="8">8"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Schedule</label>
+                            <select class="input-field" id="pd-schedule">
+                                <option value="">Select Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Roughness</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-roughness" value="0.0018" step="0.00001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipeline Efficiency</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-efficiency" value="0.95" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Flow Conditions</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Upstream Pressure P1</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-p1" value="20" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Flow Rate</label>
+                                <span class="unit">SCM/h</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-flow" value="1500" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Length</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="input-field" id="pd-length" value="10000" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>P2 (barg)</th>
+                                <th>ΔP (barg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AGA General</td>
+                                <td><input type="number" class="output-field" id="pd-p2-aga" readonly style="width:100%;border:none;background:transparent;"></td>
+                                <td><input type="number" class="output-field" id="pd-dp-aga" readonly style="width:100%;border:none;background:transparent;"></td>
+                            </tr>
+                            <tr>
+                                <td>Panhandle A</td>
+                                <td><input type="number" class="output-field" id="pd-p2-panA" readonly style="width:100%;border:none;background:transparent;"></td>
+                                <td><input type="number" class="output-field" id="pd-dp-panA" readonly style="width:100%;border:none;background:transparent;"></td>
+                            </tr>
+                            <tr>
+                                <td>Panhandle B</td>
+                                <td><input type="number" class="output-field" id="pd-p2-panB" readonly style="width:100%;border:none;background:transparent;"></td>
+                                <td><input type="number" class="output-field" id="pd-dp-panB" readonly style="width:100%;border:none;background:transparent;"></td>
+                            </tr>
+                            <tr>
+                                <td>Weymouth</td>
+                                <td><input type="number" class="output-field" id="pd-p2-wey" readonly style="width:100%;border:none;background:transparent;"></td>
+                                <td><input type="number" class="output-field" id="pd-dp-wey" readonly style="width:100%;border:none;background:transparent;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 6: Gas Flow Rate -->
+            <div id="gas-flow" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Gas & Pipe Properties</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Specific Gravity</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-sg" value="0.6" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Viscosity</label>
+                                <span class="unit">cP</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-viscosity" value="0.012" step="0.001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-temp" value="15.5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pressure</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-pressure" value="20" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Type</label>
+                            <select class="input-field" id="gf-pipe-type">
+                                <option>STEEL</option>
+                                <option>HDPE</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="gf-nps">
+                                <option value="">Select Size</option>
+                                <option value="2">2"</option>
+                                <option value="4">4"</option>
+                                <option value="6">6"</option>
+                                <option value="8">8"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Schedule</label>
+                            <select class="input-field" id="gf-schedule">
+                                <option value="">Select Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Roughness</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-roughness" value="0.0018" step="0.00001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Flow Rate</label>
+                                <span class="unit">SCM/h</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-flow" value="1500" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Base Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-base-temp" value="15" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Max Velocity</label>
+                                <span class="unit">m/s</span>
+                            </div>
+                            <input type="number" class="input-field" id="gf-max-velocity" value="20" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Gas Density</label>
+                                <span class="unit">kg/m³</span>
+                            </div>
+                            <input type="number" class="output-field" id="gf-density" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Actual Velocity</label>
+                                <span class="unit">m/s</span>
+                            </div>
+                            <input type="number" class="output-field" id="gf-velocity" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Reynolds Number</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="gf-reynolds" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Friction Factor</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="gf-friction" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Flow Regime</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="gf-regime" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="gf-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: Blow Down -->
+            <div id="blowdown" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Pipe & Orifice Data</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Inside Diameter</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-id" value="7.981" step="0.001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Length</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-length" value="1000" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Operating Pressure P1</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-p1" value="20" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Final Pressure P2</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-p2" value="0" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-temp" value="15.5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Specific Gravity</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-sg" value="0.6" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Heat Capacity Ratio k</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-k" value="1.3" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Orifice Diameter</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-orifice-d" value="2" step="0.001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Discharge Coefficient Cd</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="bd-cd" value="0.62" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Volume</label>
+                                <span class="unit">m³</span>
+                            </div>
+                            <input type="number" class="output-field" id="bd-volume" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Orifice Area</label>
+                                <span class="unit">m²</span>
+                            </div>
+                            <input type="number" class="output-field" id="bd-area" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Critical Pressure Ratio</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="bd-crit-ratio" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Blowdown Time</label>
+                                <span class="unit">seconds</span>
+                            </div>
+                            <input type="number" class="output-field" id="bd-time-sec" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Blowdown Time</label>
+                                <span class="unit">minutes</span>
+                            </div>
+                            <input type="number" class="output-field" id="bd-time-min" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: MAOP -->
+            <div id="maop" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Pipe Selection</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="maop-nps">
+                                <option value="">Select Size</option>
+                                <option value="2">2"</option>
+                                <option value="4">4"</option>
+                                <option value="6">6"</option>
+                                <option value="8">8"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Schedule</label>
+                            <select class="input-field" id="maop-schedule">
+                                <option value="">Select Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Grade</label>
+                            <select class="input-field" id="maop-grade">
+                                <option value="B">Grade B (35000)</option>
+                                <option value="X42">X42 (42000)</option>
+                                <option value="X46">X46 (46000)</option>
+                                <option value="X52">X52 (52000)</option>
+                                <option value="X56">X56 (56000)</option>
+                                <option value="X60">X60 (60000)</option>
+                                <option value="X65">X65 (65000)</option>
+                                <option value="X70">X70 (70000)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Pipe Properties (Auto-Filled)</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>OD</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="info-field" id="maop-od" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Wall Thickness</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="info-field" id="maop-wt" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>SMYS</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="info-field" id="maop-smys" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Design Parameters</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Pressure</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="input-field" id="maop-dp" value="30" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <label>Class Location</label>
+                            <select class="input-field" id="maop-class">
+                                <option value="1">Class 1 Div 1 (F=0.8)</option>
+                                <option value="2">Class 1 Div 2 (F=0.72)</option>
+                                <option value="3">Class 2 (F=0.6)</option>
+                                <option value="4">Class 3 (F=0.5)</option>
+                                <option value="5">Class 4 (F=0.4)</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Factor F</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="maop-f" value="0.8" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Joint Factor E</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="maop-e" value="1" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature Factor T</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="maop-t" value="1" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Test Factor</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="maop-test-factor" value="1.5" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>MAOP</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="output-field" id="maop-result" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hoop Stress @ MAOP</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="output-field" id="maop-hoop" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>% SMYS</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="maop-percent-smys" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="maop-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 9: Wall Thickness -->
+            <div id="wall-thickness" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Pipe Selection</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="wt-nps">
+                                <option value="8">8"</option>
+                                <option value="2">2"</option>
+                                <option value="4">4"</option>
+                                <option value="6">6"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                                <option value="14">14"</option>
+                                <option value="16">16"</option>
+                                <option value="24">24"</option>
+                                <option value="36">36"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Grade</label>
+                            <select class="input-field" id="wt-grade">
+                                <option value="B">Grade B (35000 psi)</option>
+                                <option value="X42">X42 (42000 psi)</option>
+                                <option value="X46">X46 (46000 psi)</option>
+                                <option value="X52">X52 (52000 psi)</option>
+                                <option value="X56">X56 (56000 psi)</option>
+                                <option value="X60">X60 (60000 psi)</option>
+                                <option value="X65">X65 (65000 psi)</option>
+                                <option value="X70">X70 (70000 psi)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Design Parameters</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Pressure</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-dp" value="50" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <label>Class Location</label>
+                            <select class="input-field" id="wt-class">
+                                <option value="1">Class 1 Div 1 (F=0.8)</option>
+                                <option value="2">Class 1 Div 2 (F=0.72)</option>
+                                <option value="3">Class 2 (F=0.6)</option>
+                                <option value="4">Class 3 (F=0.5)</option>
+                                <option value="5">Class 4 (F=0.4)</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Factor F</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-f" value="0.4" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Joint Factor E</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-e" value="1.0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature Factor T</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-t" value="1.0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Corrosion Allowance</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-corr" value="1.5" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Test Factor</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="wt-test-factor" value="1.5" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Pipe Properties (Auto-Filled)</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>SMYS</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="info-field" id="wt-smys" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>OD</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="info-field" id="wt-od" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Required Wall Thickness</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Min Required (without corr)</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="output-field" id="wt-min-mm" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Required (with corr)</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="output-field" id="wt-req-mm" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Selected Schedule</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Schedule</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="wt-selected-sch" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Wall Thickness</label>
+                                <span class="unit">inch / mm</span>
+                            </div>
+                            <input type="text" class="output-field" id="wt-selected-wt" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Inside Diameter</label>
+                                <span class="unit">inch / mm</span>
+                            </div>
+                            <input type="text" class="output-field" id="wt-selected-id" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Weight</label>
+                                <span class="unit">lb/ft / kg/m</span>
+                            </div>
+                            <input type="text" class="output-field" id="wt-selected-weight" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Verification</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>MAOP at Selected Sch</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="output-field" id="wt-maop" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Field Test (psi)</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="output-field" id="wt-field-test" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="wt-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 10: Hoop Stress -->
+            <div id="hoop-stress" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Pipe Selection</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Pipe Size (NPS)</label>
+                            <select class="input-field" id="hs-nps">
+                                <option value="4">4"</option>
+                                <option value="2">2"</option>
+                                <option value="6">6"</option>
+                                <option value="8">8"</option>
+                                <option value="10">10"</option>
+                                <option value="12">12"</option>
+                                <option value="14">14"</option>
+                                <option value="16">16"</option>
+                                <option value="24">24"</option>
+                                <option value="36">36"</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Schedule</label>
+                            <select class="input-field" id="hs-schedule">
+                                <option value="">Select Schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>Pipe Grade</label>
+                            <select class="input-field" id="hs-grade">
+                                <option value="X46">X46 (46000 psi)</option>
+                                <option value="B">Grade B (35000 psi)</option>
+                                <option value="X42">X42 (42000 psi)</option>
+                                <option value="X52">X52 (52000 psi)</option>
+                                <option value="X56">X56 (56000 psi)</option>
+                                <option value="X60">X60 (60000 psi)</option>
+                                <option value="X65">X65 (65000 psi)</option>
+                                <option value="X70">X70 (70000 psi)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Pipe Properties (Auto-Filled)</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>SMYS</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="info-field" id="hs-smys" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>OD</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="info-field" id="hs-od" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Wall Thickness</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="hs-wt" step="0.001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Operating Conditions</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Operating Pressure</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="input-field" id="hs-op-pres" value="30" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Pressure</label>
+                                <span class="unit">bar</span>
+                            </div>
+                            <input type="number" class="input-field" id="hs-dp-pres" value="51" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Hoop Stress at Operating Pressure</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hoop Stress</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sigma-op-psi" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hoop Stress</label>
+                                <span class="unit">MPa</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sigma-op-mpa" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>% SMYS @ OP</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-pct-op" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Safety Factor @ OP</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sf-op" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Hoop Stress at Design Pressure</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hoop Stress</label>
+                                <span class="unit">psi</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sigma-dp-psi" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hoop Stress</label>
+                                <span class="unit">MPa</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sigma-dp-mpa" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>% SMYS @ DP</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-pct-dp" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Safety Factor @ DP</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="hs-sf-dp" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Stress Limits by Class Location</h2>
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>F</th>
+                                <th>Max (psi)</th>
+                                <th>@ OP</th>
+                                <th>@ DP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hs-stress-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 11: Cathodic Protection -->
+            <div id="cathodic" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Pipeline & Coating Data</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe OD</label>
+                                <span class="unit">inch</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-od" value="16" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipeline Length</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-length" value="10000" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <label>Coating Type</label>
+                            <select class="input-field" id="cp-coating">
+                                <option value="3LPE">3LPE (fi=0.003, ff=0.03)</option>
+                                <option value="FBE">FBE (fi=0.005, ff=0.05)</option>
+                                <option value="3LPP">3LPP (fi=0.002, ff=0.02)</option>
+                                <option value="CTE">Coal Tar Enamel (fi=0.02, ff=0.1)</option>
+                                <option value="AE">Asphalt Enamel (fi=0.05, ff=0.15)</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Initial Breakdown fi</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-fi" value="0.003" step="0.001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Final Breakdown ff (30yr)</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-ff" value="0.03" step="0.001">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">CP Design Parameters</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Life</label>
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-life" value="30" step="1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Soil Resistivity</label>
+                                <span class="unit">Ω·cm</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-rho" value="5000" step="100">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Current Density</label>
+                                <span class="unit">mA/m²</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-j" value="20" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Protective Potential</label>
+                                <span class="unit">V CSE</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-ep" value="-0.85" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Utilization Factor</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-u" value="0.8" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Max Anode Spacing</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="input-field" id="cp-spacing" value="500" step="10">
+                        </div>
+                        <div class="form-item">
+                            <label>Anode Type</label>
+                            <select class="input-field" id="cp-anode">
+                                <option value="MgHP">Mg High Potential (Eoa=-1.75V)</option>
+                                <option value="MgStd">Mg Standard (Eoa=-1.55V)</option>
+                                <option value="Zn">Zinc (Eoa=-1.1V)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Bare Area & Current Requirements</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe Surface Area</label>
+                                <span class="unit">m²</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-area" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Initial Current Need</label>
+                                <span class="unit">mA</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-ii" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Final Current Need (30yr)</label>
+                                <span class="unit">mA</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-if" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Anode Design Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Anode Resistance</label>
+                                <span class="unit">Ω</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-ra" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Anode Current Output</label>
+                                <span class="unit">A</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-ia" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Number of Anodes</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-n-anodes" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Anode Spacing</label>
+                                <span class="unit">m</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-anode-spacing" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Total Anode Weight</label>
+                                <span class="unit">kg</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-total-weight" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Anode Design Life</label>
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="number" class="output-field" id="cp-anode-life" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="cp-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 12: PSV Sizing -->
+            <div id="psv" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Relief Conditions</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Set Pressure Ps</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-ps" value="30" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Back Pressure Pb</label>
+                                <span class="unit">bara</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-pb" value="1.013" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Relieving Temperature</label>
+                                <span class="unit">°C</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-temp" value="60" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Overpressure</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-op" value="10" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Gas Properties</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Required Relief Flow</label>
+                                <span class="unit">kg/h</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-w" value="5000" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Molecular Weight</label>
+                                <span class="unit">g/mol</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-m" value="17.4" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Heat Capacity Ratio k</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-k" value="1.3" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Compressibility Z</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-z" value="0.98" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Valve Coefficients</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Valve Type</label>
+                            <select class="input-field" id="psv-type">
+                                <option value="Conv">Conventional</option>
+                                <option value="Balanced">Balanced Bellows</option>
+                                <option value="Pilot">Pilot Operated</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Discharge Coefficient Kd</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-kd" value="0.975" step="0.001">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Back Pressure Correction Kb</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-kb" value="1.0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Combination Correction Kc</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="psv-kc" value="1.0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <label>Rupture Disc?</label>
+                            <input type="checkbox" id="psv-rupture" style="width:20px;height:20px;cursor:pointer;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Orifice Selection</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Required Area</label>
+                                <span class="unit">mm²</span>
+                            </div>
+                            <input type="number" class="output-field" id="psv-area-req" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>Select Orifice</label>
+                            <select class="input-field" id="psv-orifice">
+                                <option value="D">D (71 mm²)</option>
+                                <option value="E">E (126 mm²)</option>
+                                <option value="F">F (198 mm²)</option>
+                                <option value="G">G (325 mm²)</option>
+                                <option value="H">H (506 mm²)</option>
+                                <option value="J">J (830 mm²)</option>
+                                <option value="K">K (1186 mm²)</option>
+                                <option value="L">L (1841 mm²)</option>
+                                <option value="M">M (2323 mm²)</option>
+                                <option value="N">N (2800 mm²)</option>
+                                <option value="P">P (4116 mm²)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Relief Pressure P1</label>
+                                <span class="unit">psia</span>
+                            </div>
+                            <input type="number" class="output-field" id="psv-p1-psia" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Flow Condition</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="psv-flow-cond" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Selected Area</label>
+                                <span class="unit">mm²</span>
+                            </div>
+                            <input type="number" class="output-field" id="psv-area-sel" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Utilization %</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="output-field" id="psv-util-pct" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Rated Capacity</label>
+                                <span class="unit">kg/h</span>
+                            </div>
+                            <input type="number" class="output-field" id="psv-rated-cap" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div id="psv-status" class="status pass">✓ PASS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 13: LNG BOR -->
+            <div id="lng-bor" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Tank Selection</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Tank Type</label>
+                            <select class="input-field" id="bor-tank-type">
+                                <option value="ISO">Horizontal 40ft (ISO Tank)</option>
+                                <option value="V60">Vertical 60,000L</option>
+                                <option value="V50">Vertical 50,000L</option>
+                                <option value="V20">Vertical 20,000L</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Tank & LNG Properties</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Tank Net Volume</label>
+                                <span class="unit">L</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-volume" value="45400" step="1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Heat Leak Rate Q</label>
+                                <span class="unit">W</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-heat" value="110.8" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>LNG Fill Level</label>
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-fill" value="90" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>LNG Density</label>
+                                <span class="unit">kg/m³</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-density" value="450" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Latent Heat Vaporization</label>
+                                <span class="unit">kJ/kg</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-lh" value="510" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Tank MAWP</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-mawp" value="10" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Initial Tank Pressure</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="bor-init-pres" value="5.5" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Boil-Off Rate Results</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Daily Boil-Off</label>
+                                <span class="unit">kg/day</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-daily-kg" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Hourly Boil-Off</label>
+                                <span class="unit">kg/h</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-hourly-kg" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Daily Boil-Off</label>
+                                <span class="unit">L LNG/day</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-daily-litre" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>BOR</label>
+                                <span class="unit">%/day</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-rate-pct" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>LNG Mass in Tank</label>
+                                <span class="unit">kg</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-lng-mass" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Holding Time to MAWP</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Holding Time</label>
+                                <span class="unit">days</span>
+                            </div>
+                            <input type="number" class="output-field" id="bor-hold-days" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Holding Time</label>
+                                <span class="unit">days : hours</span>
+                            </div>
+                            <input type="text" class="output-field" id="bor-hold-dh" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 14: Remaining Life -->
+            <div id="remaining-life" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Section 1: Pipe Data</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Pipe OD</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-od" value="323.9" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Nominal Wall Thickness</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-t-nom" value="9.53" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Pressure (MAOP)</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-maop" value="20" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>SMYS</label>
+                                <span class="unit">MPa</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-smys" value="359" step="0.1">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Design Factor F</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-f" value="0.5" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Joint Factor E</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-e" value="1.0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Temperature Factor T</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-t" value="1.0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 2: Corrosion Data</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <label>Input Method</label>
+                            <select class="input-field" id="rl-method">
+                                <option value="direct">Direct Input</option>
+                                <option value="inspect">From Inspection Dates</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="rl-direct-section">
+                        <div class="form-group">
+                            <div class="form-item">
+                                <div class="label-with-unit">
+                                    <label>Current Wall Thickness</label>
+                                    <span class="unit">mm</span>
+                                </div>
+                                <input type="number" class="input-field" id="rl-t-act" value="8.2" step="0.01">
+                            </div>
+                            <div class="form-item">
+                                <div class="label-with-unit">
+                                    <label>Corrosion Rate</label>
+                                    <span class="unit">mm/yr</span>
+                                </div>
+                                <input type="number" class="input-field" id="rl-cr" value="0.15" step="0.001">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="rl-inspect-section" style="display:none;">
+                        <div class="form-group">
+                            <div class="form-item">
+                                <label>Installation Date</label>
+                                <input type="date" class="input-field" id="rl-install-date" value="2015-01-01">
+                            </div>
+                            <div class="form-item">
+                                <label>1st Inspection Date</label>
+                                <input type="date" class="input-field" id="rl-insp1-date" value="2021-01-01">
+                            </div>
+                            <div class="form-item">
+                                <div class="label-with-unit">
+                                    <label>1st Measured Thickness</label>
+                                    <span class="unit">mm</span>
+                                </div>
+                                <input type="number" class="input-field" id="rl-t1" value="8.5" step="0.01">
+                            </div>
+                            <div class="form-item">
+                                <label>2nd Inspection Date</label>
+                                <input type="date" class="input-field" id="rl-insp2-date" value="2024-01-01">
+                            </div>
+                            <div class="form-item">
+                                <div class="label-with-unit">
+                                    <label>2nd Measured Thickness</label>
+                                    <span class="unit">mm</span>
+                                </div>
+                                <input type="number" class="input-field" id="rl-t2" value="8.2" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 3: Defect Assessment (Optional)</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Defect Length (0 to skip)</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="input-field" id="rl-defect-len" value="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 4: Minimum Required Thickness</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>t_required</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-t-req" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 5: API 570 Remaining Life</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Corrosion Rate Used</label>
+                                <span class="unit">mm/yr</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-cr-used" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Remaining Allowance</label>
+                                <span class="unit">mm</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-rem-allow" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Remaining Life</label>
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-rem-life" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Retirement Date</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="rl-retire-date" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 6: B31G Modified Assessment</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>RSF (Remaining Strength Factor)</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-rsf" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Safe Pressure (if RSF < 1)</label>
+                                <span class="unit">barg</span>
+                            </div>
+                            <input type="number" class="output-field" id="rl-p-safe" readonly>
+                        </div>
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Assessment Status</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="rl-b31g-status" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Section 7: Inspection Schedule</h2>
+                    <div class="form-group">
+                        <div class="form-item">
+                            <div class="label-with-unit">
+                                <label>Next Inspection</label>
+                                <span class="unit">—</span>
+                            </div>
+                            <input type="text" class="output-field" id="rl-next-insp" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pipe Database
+        const PIPE_DB = {
+            "2|STD": {od_in: 2.375, wt_in: 0.154, id_in: 2.067, weight_lbft: 3.65, weight_kgm: 5.44},
+            "2|40": {od_in: 2.375, wt_in: 0.154, id_in: 2.067, weight_lbft: 3.65, weight_kgm: 5.44},
+            "2|XS": {od_in: 2.375, wt_in: 0.218, id_in: 1.939, weight_lbft: 5.02, weight_kgm: 7.48},
+            "2|80": {od_in: 2.375, wt_in: 0.218, id_in: 1.939, weight_lbft: 5.02, weight_kgm: 7.48},
+            "2|160": {od_in: 2.375, wt_in: 0.344, id_in: 1.687, weight_lbft: 7.66, weight_kgm: 11.41},
+            "4|STD": {od_in: 4.5, wt_in: 0.237, id_in: 4.026, weight_lbft: 9.11, weight_kgm: 13.57},
+            "4|40": {od_in: 4.5, wt_in: 0.237, id_in: 4.026, weight_lbft: 9.11, weight_kgm: 13.57},
+            "4|XS": {od_in: 4.5, wt_in: 0.337, id_in: 3.826, weight_lbft: 12.50, weight_kgm: 18.62},
+            "4|80": {od_in: 4.5, wt_in: 0.337, id_in: 3.826, weight_lbft: 12.50, weight_kgm: 18.62},
+            "4|160": {od_in: 4.5, wt_in: 0.531, id_in: 3.438, weight_lbft: 19.00, weight_kgm: 28.29},
+            "6|STD": {od_in: 6.625, wt_in: 0.280, id_in: 6.065, weight_lbft: 18.97, weight_kgm: 28.27},
+            "6|40": {od_in: 6.625, wt_in: 0.280, id_in: 6.065, weight_lbft: 18.97, weight_kgm: 28.27},
+            "6|XS": {od_in: 6.625, wt_in: 0.432, id_in: 5.761, weight_lbft: 28.57, weight_kgm: 42.58},
+            "6|80": {od_in: 6.625, wt_in: 0.432, id_in: 5.761, weight_lbft: 28.57, weight_kgm: 42.58},
+            "6|160": {od_in: 6.625, wt_in: 0.719, id_in: 5.187, weight_lbft: 46.08, weight_kgm: 68.62},
+            "8|20": {od_in: 8.625, wt_in: 0.250, id_in: 8.125, weight_lbft: 24.70, weight_kgm: 36.78},
+            "8|30": {od_in: 8.625, wt_in: 0.277, id_in: 8.071, weight_lbft: 27.40, weight_kgm: 40.79},
+            "8|STD": {od_in: 8.625, wt_in: 0.322, id_in: 7.981, weight_lbft: 28.55, weight_kgm: 42.54},
+            "8|40": {od_in: 8.625, wt_in: 0.322, id_in: 7.981, weight_lbft: 28.55, weight_kgm: 42.54},
+            "8|XS": {od_in: 8.625, wt_in: 0.500, id_in: 7.625, weight_lbft: 43.39, weight_kgm: 64.62},
+            "8|80": {od_in: 8.625, wt_in: 0.500, id_in: 7.625, weight_lbft: 43.39, weight_kgm: 64.62},
+            "8|160": {od_in: 8.625, wt_in: 0.906, id_in: 6.813, weight_lbft: 72.42, weight_kgm: 107.84},
+            "10|STD": {od_in: 10.75, wt_in: 0.365, id_in: 10.02, weight_lbft: 40.48, weight_kgm: 60.27},
+            "10|40": {od_in: 10.75, wt_in: 0.365, id_in: 10.02, weight_lbft: 40.48, weight_kgm: 60.27},
+            "10|XS": {od_in: 10.75, wt_in: 0.500, id_in: 9.75, weight_lbft: 54.74, weight_kgm: 81.52},
+            "10|80": {od_in: 10.75, wt_in: 0.500, id_in: 9.75, weight_lbft: 54.74, weight_kgm: 81.52},
+            "10|160": {od_in: 10.75, wt_in: 1.125, id_in: 8.5, weight_lbft: 104.13, weight_kgm: 155.05},
+            "12|20": {od_in: 12.75, wt_in: 0.250, id_in: 12.25, weight_lbft: 42.00, weight_kgm: 62.58},
+            "12|30": {od_in: 12.75, wt_in: 0.330, id_in: 12.09, weight_lbft: 49.56, weight_kgm: 73.84},
+            "12|STD": {od_in: 12.75, wt_in: 0.406, id_in: 11.938, weight_lbft: 49.56, weight_kgm: 73.84},
+            "12|40": {od_in: 12.75, wt_in: 0.406, id_in: 11.938, weight_lbft: 49.56, weight_kgm: 73.84},
+            "12|XS": {od_in: 12.75, wt_in: 0.688, id_in: 11.374, weight_lbft: 65.42, weight_kgm: 97.43},
+            "12|80": {od_in: 12.75, wt_in: 0.688, id_in: 11.374, weight_lbft: 65.42, weight_kgm: 97.43},
+            "12|160": {od_in: 12.75, wt_in: 1.312, id_in: 10.126, weight_lbft: 106.50, weight_kgm: 158.67},
+            "14|20": {od_in: 14.0, wt_in: 0.312, id_in: 13.376, weight_lbft: 54.57, weight_kgm: 81.30},
+            "14|30": {od_in: 14.0, wt_in: 0.375, id_in: 13.25, weight_lbft: 54.57, weight_kgm: 81.30},
+            "14|STD": {od_in: 14.0, wt_in: 0.375, id_in: 13.25, weight_lbft: 54.57, weight_kgm: 81.30},
+            "14|XS": {od_in: 14.0, wt_in: 0.500, id_in: 13.0, weight_lbft: 64.60, weight_kgm: 96.21},
+            "14|80": {od_in: 14.0, wt_in: 0.500, id_in: 13.0, weight_lbft: 64.60, weight_kgm: 96.21},
+            "16|20": {od_in: 16.0, wt_in: 0.312, id_in: 15.376, weight_lbft: 65.42, weight_kgm: 97.43},
+            "16|STD": {od_in: 16.0, wt_in: 0.375, id_in: 15.25, weight_lbft: 65.42, weight_kgm: 97.43},
+            "16|XS": {od_in: 16.0, wt_in: 0.500, id_in: 15.0, weight_lbft: 80.14, weight_kgm: 119.41},
+            "16|80": {od_in: 16.0, wt_in: 0.500, id_in: 15.0, weight_lbft: 80.14, weight_kgm: 119.41},
+            "24|20": {od_in: 24.0, wt_in: 0.375, id_in: 23.25, weight_lbft: 94.00, weight_kgm: 140.04},
+            "24|XS": {od_in: 24.0, wt_in: 0.500, id_in: 23.0, weight_lbft: 120.67, weight_kgm: 179.80},
+            "24|80": {od_in: 24.0, wt_in: 0.500, id_in: 23.0, weight_lbft: 120.67, weight_kgm: 179.80},
+            "36|STD": {od_in: 36.0, wt_in: 0.375, id_in: 35.25, weight_lbft: 141.00, weight_kgm: 210.11},
+            "36|XS": {od_in: 36.0, wt_in: 0.500, id_in: 35.0, weight_lbft: 181.00, weight_kgm: 269.80},
+            "36|80": {od_in: 36.0, wt_in: 0.500, id_in: 35.0, weight_lbft: 181.00, weight_kgm: 269.80}
+        };
+
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        // Unit Conversion Calculations
+        document.getElementById('lng-kg').addEventListener('input', calculateLNG);
+        document.getElementById('lng-density').addEventListener('input', calculateLNG);
+
+        function calculateLNG() {
+            const kg = parseFloat(document.getElementById('lng-kg').value) || 0;
+            const density = parseFloat(document.getElementById('lng-density').value) || 450;
+
+            if (kg <= 0) {
+                document.getElementById('lng-sm3').value = '';
+                document.getElementById('lng-nm3').value = '';
+                document.getElementById('lng-tonne').value = '';
+                return;
+            }
+
+            const sm3 = kg * 1371.389 / 1000;
+            const nm3 = kg * 1300 / 1000;
+            const tonne = kg / 1000;
+
+            document.getElementById('lng-sm3').value = sm3.toFixed(4);
+            document.getElementById('lng-nm3').value = nm3.toFixed(4);
+            document.getElementById('lng-tonne').value = tonne.toFixed(6);
+        }
+
+        document.getElementById('mmscf-value').addEventListener('input', calculateNGConversions);
+        document.getElementById('mmbtu-value').addEventListener('input', calculateNGConversions);
+        document.getElementById('sm3-value').addEventListener('input', calculateNGConversions);
+        document.getElementById('hhv-value').addEventListener('input', calculateNGConversions);
+
+        function calculateNGConversions() {
+            const hhv = parseFloat(document.getElementById('hhv-value').value) || 978;
+            const mmscf = parseFloat(document.getElementById('mmscf-value').value) || 0;
+            const mmbtu = parseFloat(document.getElementById('mmbtu-value').value) || 0;
+            const sm3 = parseFloat(document.getElementById('sm3-value').value) || 0;
+
+            if (mmscf > 0) {
+                const result = mmscf * 1e6 / 35.31472;
+                document.getElementById('mmscf-to-sm3').value = result.toFixed(2);
+            } else {
+                document.getElementById('mmscf-to-sm3').value = '';
+            }
+
+            if (mmbtu > 0) {
+                const result = mmbtu * 1e6 / hhv / 35.31472;
+                document.getElementById('mmbtu-to-sm3').value = result.toFixed(2);
+            } else {
+                document.getElementById('mmbtu-to-sm3').value = '';
+            }
+
+            if (sm3 > 0) {
+                const mmscf_result = sm3 * 35.31472 / 1e6;
+                const mmbtu_result = sm3 * 35.31472 * hhv / 1e6;
+                document.getElementById('sm3-to-mmscf').value = mmscf_result.toFixed(6);
+                document.getElementById('sm3-to-mmbtu').value = mmbtu_result.toFixed(2);
+            } else {
+                document.getElementById('sm3-to-mmscf').value = '';
+                document.getElementById('sm3-to-mmbtu').value = '';
+            }
+        }
+
+        // LNG ROP Calculations
+        document.getElementById('rop-work-hours').addEventListener('input', calculateROP);
+        document.getElementById('rop-work-days').addEventListener('input', calculateROP);
+        document.getElementById('rop-safety-stock').addEventListener('input', calculateROP);
+        document.getElementById('rop-lead-time').addEventListener('input', calculateROP);
+        document.getElementById('rop-consumption').addEventListener('input', calculateROP);
+        document.getElementById('rop-tank-capacity').addEventListener('input', calculateROP);
+
+        function calculateROP() {
+            const workHours = parseFloat(document.getElementById('rop-work-hours').value) || 8;
+            const workDays = parseFloat(document.getElementById('rop-work-days').value) || 350;
+            const safetyDays = parseFloat(document.getElementById('rop-safety-stock').value) || 1;
+            const leadDays = parseFloat(document.getElementById('rop-lead-time').value) || 1;
+            const consumption = parseFloat(document.getElementById('rop-consumption').value) || 162;
+            const tankCapacity = parseFloat(document.getElementById('rop-tank-capacity').value) || 21.3354;
+
+            // SCM/day = consumption_MMBtu × 1e6 / 978 / 35.31472
+            const scmDay = consumption * 1e6 / 978 / 35.31472;
+
+            // tonne/day = SCM/d / 1371.389
+            const tonneDay = scmDay / 1371.389;
+
+            // Annual consumption
+            const annualConsumption = tonneDay * workDays;
+
+            // Safety stock in tonne
+            const safetyStockTonne = tonneDay * safetyDays;
+
+            // Lead time demand in tonne
+            const leadTimeDemand = tonneDay * leadDays;
+
+            // ROP = lead_demand + safety_stock
+            const rop = leadTimeDemand + safetyStockTonne;
+
+            // ROP as % of tank capacity
+            const ropPercent = (rop / tankCapacity) * 100;
+
+            // Days of supply in tank
+            const daysSupply = tankCapacity / tonneDay;
+
+            // Status
+            const status = tankCapacity >= rop ? 'pass' : 'fail';
+
+            document.getElementById('rop-daily-consumption').value = tonneDay.toFixed(4);
+            document.getElementById('rop-annual-consumption').value = annualConsumption.toFixed(2);
+            document.getElementById('rop-value').value = rop.toFixed(4);
+            document.getElementById('rop-percent').value = ropPercent.toFixed(2);
+            document.getElementById('rop-days-supply').value = daysSupply.toFixed(2);
+
+            const statusEl = document.getElementById('rop-status');
+            if (status === 'pass') {
+                statusEl.className = 'status pass';
+                statusEl.textContent = '✓ PASS';
+            } else {
+                statusEl.className = 'status fail';
+                statusEl.textContent = '✗ FAIL';
+            }
+        }
+
+        // Hydrogen Calculations
+        document.getElementById('h2-vol-percent').addEventListener('input', calculateHydrogen);
+        document.getElementById('h2-work-hours').addEventListener('input', calculateHydrogen);
+        document.getElementById('h2-work-days').addEventListener('input', calculateHydrogen);
+        document.getElementById('h2-annual-consumption').addEventListener('input', calculateHydrogen);
+        document.getElementById('h2-truck-capacity').addEventListener('input', calculateHydrogen);
+
+        function calculateHydrogen() {
+            const h2Vol = parseFloat(document.getElementById('h2-vol-percent').value) || 5;
+            const workHours = parseFloat(document.getElementById('h2-work-hours').value) || 24;
+            const workDays = parseFloat(document.getElementById('h2-work-days').value) || 365;
+            const annualConsumption = parseFloat(document.getElementById('h2-annual-consumption').value) || 10000;
+            const truckCapacity = parseFloat(document.getElementById('h2-truck-capacity').value) || 20;
+
+            const ngVol = 100 - h2Vol;
+
+            // Constants
+            const h2LHVMJNm3 = 10.806;
+            const ngLHVMJNm3 = 255.89;
+            const h2HHVMJNm3 = 12.780;
+            const ngHHVMJNm3 = 283.49;
+            const h2DensityKgNm3 = 0.0899;
+
+            // Convert to MMBtu/Nm3
+            const h2LHVMMBtuNm3 = h2LHVMJNm3 * 0.000948;
+            const ngLHVMMBtuNm3 = ngLHVMJNm3 * 0.000948;
+            const h2HHVMMBtuNm3 = h2HHVMJNm3 * 0.000948;
+            const ngHHVMMBtuNm3 = ngHHVMJNm3 * 0.000948;
+
+            // Blended LHV and HHV
+            const blendedLHV = (h2Vol/100) * h2LHVMJNm3 + (ngVol/100) * ngLHVMJNm3;
+            const blendedHHV = (h2Vol/100) * h2HHVMJNm3 + (ngVol/100) * ngHHVMJNm3;
+
+            // Consumption rate (MMBtu/hr)
+            const consumptionMMBtuHr = annualConsumption / (workDays * workHours);
+
+            // Blended LHV in MMBtu/Nm3
+            const blendedLHVMMBtuNm3 = (h2Vol/100) * h2LHVMMBtuNm3 + (ngVol/100) * ngLHVMMBtuNm3;
+
+            // Consumption rate (Nm3/hr)
+            const consumptionNm3Hr = consumptionMMBtuHr / blendedLHVMMBtuNm3;
+
+            // H2 consumption (kg/hr)
+            const h2ConsumptionKgHr = consumptionNm3Hr * (h2Vol / 100) * h2DensityKgNm3;
+
+            // Daily H2 consumption
+            const dailyH2Kg = h2ConsumptionKgHr * workHours;
+
+            // Time between orders
+            const timeBetweenOrders = truckCapacity / dailyH2Kg;
+
+            document.getElementById('h2-ng-vol-percent').value = ngVol.toFixed(2);
+            document.getElementById('h2-blended-lhv').value = blendedLHV.toFixed(3);
+            document.getElementById('h2-blended-hhv').value = blendedHHV.toFixed(3);
+            document.getElementById('h2-consumption-mmbtu-hr').value = consumptionMMBtuHr.toFixed(4);
+            document.getElementById('h2-consumption-nm3-hr').value = consumptionNm3Hr.toFixed(2);
+            document.getElementById('h2-consumption-kg-hr').value = h2ConsumptionKgHr.toFixed(4);
+            document.getElementById('h2-consumption-kg-day').value = dailyH2Kg.toFixed(2);
+            document.getElementById('h2-time-between-orders').value = timeBetweenOrders.toFixed(2);
+        }
+
+        // Pipe Schedule Helper
+        const pipeSchedules = {
+            '2': ['STD', 'XS', '160'],
+            '4': ['STD', 'XS', '160'],
+            '6': ['STD', 'XS', '160'],
+            '8': ['20', '30', 'STD', 'XS', '160'],
+            '10': ['STD', 'XS', '160'],
+            '12': ['20', '30', 'STD', 'XS', '160'],
+            '14': ['20', '30', 'STD', 'XS'],
+            '16': ['20', 'STD', 'XS'],
+            '24': ['20', 'XS'],
+            '36': ['STD', 'XS']
+        };
+
+        function updateScheduleDropdown(npsId, scheduleId) {
+            const nps = document.getElementById(npsId).value;
+            const scheduleEl = document.getElementById(scheduleId);
+            scheduleEl.innerHTML = '<option value="">Select Schedule</option>';
+            if (nps && pipeSchedules[nps]) {
+                pipeSchedules[nps].forEach(sch => {
+                    const opt = document.createElement('option');
+                    opt.value = sch;
+                    opt.textContent = sch;
+                    scheduleEl.appendChild(opt);
+                });
+            }
+        }
+
+        // Linepack Calculations
+        document.getElementById('lp-nps').addEventListener('change', () => updateScheduleDropdown('lp-nps', 'lp-schedule'));
+        document.getElementById('lp-pressure').addEventListener('input', calculateLinepack);
+        document.getElementById('lp-temp').addEventListener('input', calculateLinepack);
+        document.getElementById('lp-length').addEventListener('input', calculateLinepack);
+        document.getElementById('lp-z').addEventListener('input', calculateLinepack);
+        document.getElementById('lp-schedule').addEventListener('change', calculateLinepack);
+
+        function calculateLinepack() {
+            const nps = document.getElementById('lp-nps').value;
+            const schedule = document.getElementById('lp-schedule').value;
+            const pressure = parseFloat(document.getElementById('lp-pressure').value) || 5;
+            const temp = parseFloat(document.getElementById('lp-temp').value) || 15.5;
+            const length = parseFloat(document.getElementById('lp-length').value) || 600;
+            const z = parseFloat(document.getElementById('lp-z').value) || 0.9867;
+
+            if (!nps || !schedule) {
+                document.getElementById('lp-volume-sm3').value = '';
+                document.getElementById('lp-volume-ft3').value = '';
+                document.getElementById('lp-volume-mmbtu').value = '';
+                return;
+            }
+
+            const key = `${nps}|${schedule}`;
+            const pipeData = PIPE_DB[key];
+            if (!pipeData) return;
+
+            const pAvgBara = pressure + 1.01325;
+            const tK = temp + 273.15;
+            const tBaseK = 15 + 273.15;
+            const pBaseBar = 1.01325;
+            const dInches = pipeData.id_in;
+            const dMeters = dInches * 0.0254;
+            const area = Math.PI / 4 * dMeters * dMeters;
+
+            // Linepack (Sm3)
+            const vSm3 = pAvgBara * area * length * tBaseK / (z * pBaseBar * tK);
+            const vFt3 = vSm3 * 35.31472;
+            const vMMBtu = vSm3 * 35.31472 * 978 / 1e6;
+
+            document.getElementById('lp-volume-sm3').value = vSm3.toFixed(2);
+            document.getElementById('lp-volume-ft3').value = vFt3.toFixed(2);
+            document.getElementById('lp-volume-mmbtu').value = vMMBtu.toFixed(2);
+        }
+
+        // Pressure Drop Setup
+        document.getElementById('pd-nps').addEventListener('change', () => updateScheduleDropdown('pd-nps', 'pd-schedule'));
+        document.getElementById('pd-pipe-type').addEventListener('change', () => {
+            const type = document.getElementById('pd-pipe-type').value;
+            const roughness = type === 'STEEL' ? 0.0018 : 0.000059;
+            document.getElementById('pd-roughness').value = roughness;
+        });
+        document.getElementById('pd-sg').addEventListener('input', calculatePressureDrop);
+        document.getElementById('pd-temp').addEventListener('input', calculatePressureDrop);
+        document.getElementById('pd-z').addEventListener('input', calculatePressureDrop);
+        document.getElementById('pd-schedule').addEventListener('change', calculatePressureDrop);
+        document.getElementById('pd-p1').addEventListener('input', calculatePressureDrop);
+        document.getElementById('pd-flow').addEventListener('input', calculatePressureDrop);
+        document.getElementById('pd-length').addEventListener('input', calculatePressureDrop);
+
+        function calculatePressureDrop() {
+            const nps = document.getElementById('pd-nps').value;
+            const schedule = document.getElementById('pd-schedule').value;
+            const sg = parseFloat(document.getElementById('pd-sg').value) || 0.6;
+            const tempC = parseFloat(document.getElementById('pd-temp').value) || 15.5;
+            const z = parseFloat(document.getElementById('pd-z').value) || 0.9867;
+            const p1Barg = parseFloat(document.getElementById('pd-p1').value) || 20;
+            const flowScmh = parseFloat(document.getElementById('pd-flow').value) || 1500;
+            const lengthM = parseFloat(document.getElementById('pd-length').value) || 10000;
+
+            if (!nps || !schedule) return;
+
+            const key = `${nps}|${schedule}`;
+            const pipeData = PIPE_DB[key];
+            if (!pipeData) return;
+
+            const dInches = pipeData.id_in;
+            const lengthMiles = lengthM * 0.000621371;
+            const p1Psia = p1Barg * 14.5038 + 14.696;
+            const tRankine = (tempC + 273.15) * 9/5;
+            const qScfd = flowScmh * 24 * 35.31472;
+            const tbRankine = 518.67;
+            const pbPsia = 14.696;
+            const roughness = parseFloat(document.getElementById('pd-roughness').value) || 0.0018;
+            const efficiency = parseFloat(document.getElementById('pd-efficiency').value) || 0.95;
+            const relRoughness = roughness / dInches;
+
+            // Friction factor (Colebrook, approx)
+            const logTerm = 3.71 / relRoughness;
+            const f = 1 / (4 * Math.log10(logTerm)) ** 2;
+
+            // AGA General Flow
+            const agaNumerator = qScfd * pbPsia / (38.774 * tbRankine * Math.pow(dInches, 2.5) * (1/Math.sqrt(f)) * efficiency);
+            const agaTerm = agaNumerator * agaNumerator * sg * tRankine * lengthMiles * z;
+            const p2Psia_aga = Math.sqrt(p1Psia * p1Psia - agaTerm);
+            const p2Barg_aga = p2Psia_aga / 14.5038 - 1.01325;
+            const dpBarg_aga = p1Barg - p2Barg_aga;
+
+            document.getElementById('pd-p2-aga').value = p2Barg_aga.toFixed(2);
+            document.getElementById('pd-dp-aga').value = dpBarg_aga.toFixed(2);
+
+            // Panhandle A
+            const panATerm = qScfd / (435.87 * Math.pow(tbRankine/pbPsia, 1.0788) * efficiency * Math.pow(dInches, 2.6182));
+            const panAExponent = 1 / 0.5394;
+            const panACalc = (sg * Math.pow(tRankine, 0.5394) * Math.pow(lengthMiles, 0.5394) * Math.pow(z, 0.5394)) / panATerm;
+            const p1SqAga = p1Psia * p1Psia;
+            const p2SqPana = p1SqAga - Math.pow(panACalc, panAExponent);
+            const p2Psia_panA = Math.sqrt(Math.max(p2SqPana, 1));
+            const p2Barg_panA = p2Psia_panA / 14.5038 - 1.01325;
+            const dpBarg_panA = p1Barg - p2Barg_panA;
+
+            document.getElementById('pd-p2-panA').value = p2Barg_panA.toFixed(2);
+            document.getElementById('pd-dp-panA').value = dpBarg_panA.toFixed(2);
+
+            // Panhandle B
+            const panBTerm = qScfd / (737 * Math.pow(tbRankine/pbPsia, 1.02) * efficiency * Math.pow(dInches, 2.53));
+            const panBExponent = 1 / 0.51;
+            const panBCalc = (sg * Math.pow(tRankine, 0.51) * Math.pow(lengthMiles, 0.51) * Math.pow(z, 0.51)) / panBTerm;
+            const p2SqPanb = p1SqAga - Math.pow(panBCalc, panBExponent);
+            const p2Psia_panB = Math.sqrt(Math.max(p2SqPanb, 1));
+            const p2Barg_panB = p2Psia_panB / 14.5038 - 1.01325;
+            const dpBarg_panB = p1Barg - p2Barg_panB;
+
+            document.getElementById('pd-p2-panB').value = p2Barg_panB.toFixed(2);
+            document.getElementById('pd-dp-panB').value = dpBarg_panB.toFixed(2);
+
+            // Weymouth
+            const weymouthTerm = qScfd * pbPsia / (433.49 * tbRankine * efficiency * Math.pow(dInches, 8/3));
+            const weymouthCalc = weymouthTerm * weymouthTerm * sg * tRankine * lengthMiles * z;
+            const p2SqWey = p1SqAga - weymouthCalc;
+            const p2Psia_wey = Math.sqrt(Math.max(p2SqWey, 1));
+            const p2Barg_wey = p2Psia_wey / 14.5038 - 1.01325;
+            const dpBarg_wey = p1Barg - p2Barg_wey;
+
+            document.getElementById('pd-p2-wey').value = p2Barg_wey.toFixed(2);
+            document.getElementById('pd-dp-wey').value = dpBarg_wey.toFixed(2);
+        }
+
+        // Gas Flow Calculations
+        document.getElementById('gf-nps').addEventListener('change', () => updateScheduleDropdown('gf-nps', 'gf-schedule'));
+        document.getElementById('gf-pipe-type').addEventListener('change', () => {
+            const type = document.getElementById('gf-pipe-type').value;
+            const roughness = type === 'STEEL' ? 0.0018 : 0.000059;
+            document.getElementById('gf-roughness').value = roughness;
+        });
+        document.getElementById('gf-sg').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-viscosity').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-temp').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-pressure').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-flow').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-base-temp').addEventListener('input', calculateGasFlow);
+        document.getElementById('gf-schedule').addEventListener('change', calculateGasFlow);
+        document.getElementById('gf-max-velocity').addEventListener('input', calculateGasFlow);
+
+        function calculateGasFlow() {
+            const nps = document.getElementById('gf-nps').value;
+            const schedule = document.getElementById('gf-schedule').value;
+            const sg = parseFloat(document.getElementById('gf-sg').value) || 0.6;
+            const viscosity = parseFloat(document.getElementById('gf-viscosity').value) || 0.012;
+            const tempC = parseFloat(document.getElementById('gf-temp').value) || 15.5;
+            const pressBarg = parseFloat(document.getElementById('gf-pressure').value) || 20;
+            const flowScmh = parseFloat(document.getElementById('gf-flow').value) || 1500;
+            const baseTempC = parseFloat(document.getElementById('gf-base-temp').value) || 15;
+            const maxVel = parseFloat(document.getElementById('gf-max-velocity').value) || 20;
+
+            if (!nps || !schedule) return;
+
+            const key = `${nps}|${schedule}`;
+            const pipeData = PIPE_DB[key];
+            if (!pipeData) return;
+
+            const dMeters = pipeData.id_in * 0.0254;
+            const area = Math.PI / 4 * dMeters * dMeters;
+            const tK = tempC + 273.15;
+            const tBaseK = baseTempC + 273.15;
+            const pressAbs = pressBarg + 1.01325;
+
+            // Gas density at operating conditions
+            const mw = sg * 28.97;
+            const z = 0.9867;
+            const r = 8314;
+            const rho = pressAbs * 100000 * mw / (z * r * tK);
+
+            // Actual volumetric flow at operating conditions
+            const qActual = (flowScmh / 3600) * (1.01325 / pressAbs) * (tK / tBaseK) * z;
+            const velocity = qActual / area;
+
+            // Reynolds number
+            const re = rho * velocity * dMeters / (viscosity * 0.001);
+
+            // Friction factor
+            let friction = 0.025;
+            const relRoughness = (parseFloat(document.getElementById('gf-roughness').value) || 0.0018) * 0.0254 / dMeters;
+            if (re > 2300) {
+                const swamee = 0.25 / Math.pow(Math.log10(relRoughness / 3.7 + 5.74 / Math.pow(re, 0.9)), 2);
+                friction = swamee;
+            }
+
+            // Flow regime
+            let regime = 'Laminar';
+            if (re > 2300 && re <= 4000) regime = 'Transitional';
+            if (re > 4000) regime = 'Turbulent';
+
+            // Status
+            const status = velocity <= maxVel ? 'pass' : 'fail';
+
+            document.getElementById('gf-density').value = rho.toFixed(3);
+            document.getElementById('gf-velocity').value = velocity.toFixed(2);
+            document.getElementById('gf-reynolds').value = re.toFixed(0);
+            document.getElementById('gf-friction').value = friction.toFixed(6);
+            document.getElementById('gf-regime').value = regime;
+
+            const statusEl = document.getElementById('gf-status');
+            if (status === 'pass') {
+                statusEl.className = 'status pass';
+                statusEl.textContent = '✓ PASS';
+            } else {
+                statusEl.className = 'status fail';
+                statusEl.textContent = '✗ FAIL';
+            }
+        }
+
+        // Blow Down Calculations
+        document.getElementById('bd-id').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-length').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-p1').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-p2').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-temp').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-sg').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-k').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-orifice-d').addEventListener('input', calculateBlowdown);
+        document.getElementById('bd-cd').addEventListener('input', calculateBlowdown);
+
+        function calculateBlowdown() {
+            const id = parseFloat(document.getElementById('bd-id').value) || 7.981;
+            const length = parseFloat(document.getElementById('bd-length').value) || 1000;
+            const p1Barg = parseFloat(document.getElementById('bd-p1').value) || 20;
+            const p2Barg = parseFloat(document.getElementById('bd-p2').value) || 0;
+            const tempC = parseFloat(document.getElementById('bd-temp').value) || 15.5;
+            const sg = parseFloat(document.getElementById('bd-sg').value) || 0.6;
+            const k = parseFloat(document.getElementById('bd-k').value) || 1.3;
+            const orificeDiam = parseFloat(document.getElementById('bd-orifice-d').value) || 2;
+            const cd = parseFloat(document.getElementById('bd-cd').value) || 0.62;
+
+            const dMeters = id * 0.0254;
+            const volume = Math.PI / 4 * dMeters * dMeters * length;
+            const aOrifice = Math.PI / 4 * (orificeDiam * 0.0254) * (orificeDiam * 0.0254);
+            const p1Abs = (p1Barg + 1.01325) * 1e5;
+            const p2Abs = (p2Barg + 1.01325) * 1e5;
+            const tK = tempC + 273.15;
+            const mw = sg * 28.97;
+            const r = 8314;
+
+            // Critical pressure ratio
+            const critRatio = Math.pow(2 / (k + 1), k / (k - 1));
+
+            // Sonic velocity
+            const cSonic = Math.sqrt(k * r * tK / mw);
+
+            // Numerical integration
+            let pCurrent = p1Abs;
+            let totalTime = 0;
+            const steps = 1000;
+            const dpStep = (p1Abs - p2Abs) / steps;
+
+            for (let i = 0; i < steps; i++) {
+                const prRatio = p2Abs / pCurrent;
+                let massFlow;
+
+                if (prRatio < critRatio) {
+                    // Choked flow
+                    massFlow = cd * aOrifice * pCurrent * Math.sqrt(k * mw / (r * tK)) * Math.pow(2 / (k + 1), (k + 1) / (2 * (k - 1)));
+                } else {
+                    // Unchoked flow
+                    const term1 = 2 * k / (k - 1) * mw / (r * tK);
+                    const term2 = Math.pow(prRatio, 2 / k) - Math.pow(prRatio, (k + 1) / k);
+                    massFlow = cd * aOrifice * pCurrent * Math.sqrt(term1 * term2);
+                }
+
+                const mass = pCurrent * volume * mw / (r * tK);
+                const dpdt = -massFlow * r * tK / (volume * mw);
+                const dt = dpStep / Math.abs(dpdt);
+                totalTime += dt;
+                pCurrent -= dpStep;
+            }
+
+            document.getElementById('bd-volume').value = volume.toFixed(4);
+            document.getElementById('bd-area').value = aOrifice.toFixed(6);
+            document.getElementById('bd-crit-ratio').value = critRatio.toFixed(4);
+            document.getElementById('bd-time-sec').value = totalTime.toFixed(1);
+            document.getElementById('bd-time-min').value = (totalTime / 60).toFixed(2);
+        }
+
+        // MAOP Calculations
+        const smysMap = {
+            'B': 35000,
+            'X42': 42000,
+            'X46': 46000,
+            'X52': 52000,
+            'X56': 56000,
+            'X60': 60000,
+            'X65': 65000,
+            'X70': 70000
+        };
+
+        document.getElementById('maop-nps').addEventListener('change', () => {
+            updateScheduleDropdown('maop-nps', 'maop-schedule');
+            updateMaopPipeData();
+        });
+        document.getElementById('maop-schedule').addEventListener('change', updateMaopPipeData);
+        document.getElementById('maop-grade').addEventListener('change', updateMaopPipeData);
+        document.getElementById('maop-class').addEventListener('change', () => {
+            const classVal = document.getElementById('maop-class').value;
+            const fValues = { '1': 0.8, '2': 0.72, '3': 0.6, '4': 0.5, '5': 0.4 };
+            document.getElementById('maop-f').value = fValues[classVal] || 0.8;
+            calculateMaop();
+        });
+        document.getElementById('maop-dp').addEventListener('input', calculateMaop);
+        document.getElementById('maop-f').addEventListener('input', calculateMaop);
+        document.getElementById('maop-e').addEventListener('input', calculateMaop);
+        document.getElementById('maop-t').addEventListener('input', calculateMaop);
+        document.getElementById('maop-test-factor').addEventListener('input', calculateMaop);
+
+        function updateMaopPipeData() {
+            const nps = document.getElementById('maop-nps').value;
+            const schedule = document.getElementById('maop-schedule').value;
+            if (!nps || !schedule) return;
+
+            const key = `${nps}|${schedule}`;
+            const pipeData = PIPE_DB[key];
+            if (!pipeData) return;
+
+            document.getElementById('maop-od').value = pipeData.od_in.toFixed(3);
+            document.getElementById('maop-wt').value = pipeData.wt_in.toFixed(4);
+
+            const grade = document.getElementById('maop-grade').value;
+            const smys = smysMap[grade];
+            document.getElementById('maop-smys').value = smys;
+
+            calculateMaop();
+        }
+
+        function calculateMaop() {
+            const od = parseFloat(document.getElementById('maop-od').value) || 0;
+            const wt = parseFloat(document.getElementById('maop-wt').value) || 0;
+            const smysPsi = parseFloat(document.getElementById('maop-smys').value) || 35000;
+            const dpBar = parseFloat(document.getElementById('maop-dp').value) || 30;
+            const f = parseFloat(document.getElementById('maop-f').value) || 0.8;
+            const e = parseFloat(document.getElementById('maop-e').value) || 1;
+            const t = parseFloat(document.getElementById('maop-t').value) || 1;
+            const testFactor = parseFloat(document.getElementById('maop-test-factor').value) || 1.5;
+
+            if (od === 0 || wt === 0) {
+                document.getElementById('maop-result').value = '';
+                document.getElementById('maop-hoop').value = '';
+                document.getElementById('maop-percent-smys').value = '';
+                return;
+            }
+
+            const dpPsi = dpBar * 14.5038;
+            const maopPsi = 2 * smysPsi * wt * f * e * t / od;
+            const maopBar = maopPsi / 14.5038;
+            const hoopStress = smysPsi * f;
+            const percentSmys = f * 100;
+            const status = maopPsi >= dpPsi ? 'pass' : 'fail';
+
+            document.getElementById('maop-result').value = maopBar.toFixed(2);
+            document.getElementById('maop-hoop').value = hoopStress.toFixed(0);
+            document.getElementById('maop-percent-smys').value = percentSmys.toFixed(1);
+
+            const statusEl = document.getElementById('maop-status');
+            if (status === 'pass') {
+                statusEl.className = 'status pass';
+                statusEl.textContent = '✓ PASS';
+            } else {
+                statusEl.className = 'status fail';
+                statusEl.textContent = '✗ FAIL';
+            }
+        }
+
+        // ==================== WALL THICKNESS ====================
+        const odByNps = {'2':2.375, '4':4.5, '6':6.625, '8':8.625, '10':10.75, '12':12.75, '14':14.0, '16':16.0, '24':24.0, '36':36.0};
+
+        document.getElementById('wt-nps').addEventListener('change', updateWtPipeData);
+        document.getElementById('wt-grade').addEventListener('change', updateWtPipeData);
+        document.getElementById('wt-class').addEventListener('change', () => {
+            const classVal = document.getElementById('wt-class').value;
+            const fVals = {'1':0.8, '2':0.72, '3':0.6, '4':0.5, '5':0.4};
+            document.getElementById('wt-f').value = fVals[classVal] || 0.4;
+            calculateWallThickness();
+        });
+        document.getElementById('wt-dp').addEventListener('input', calculateWallThickness);
+        document.getElementById('wt-f').addEventListener('input', calculateWallThickness);
+        document.getElementById('wt-e').addEventListener('input', calculateWallThickness);
+        document.getElementById('wt-t').addEventListener('input', calculateWallThickness);
+        document.getElementById('wt-corr').addEventListener('input', calculateWallThickness);
+        document.getElementById('wt-test-factor').addEventListener('input', calculateWallThickness);
+
+        function updateWtPipeData() {
+            const nps = document.getElementById('wt-nps').value;
+            const od = odByNps[nps] || 0;
+            document.getElementById('wt-od').value = od.toFixed(3);
+
+            const grade = document.getElementById('wt-grade').value;
+            const smys = smysMap[grade] || 35000;
+            document.getElementById('wt-smys').value = smys;
+
+            calculateWallThickness();
+        }
+
+        function calculateWallThickness() {
+            const nps = document.getElementById('wt-nps').value;
+            const dpBar = parseFloat(document.getElementById('wt-dp').value) || 50;
+            const smysPsi = parseFloat(document.getElementById('wt-smys').value) || 35000;
+            const od = parseFloat(document.getElementById('wt-od').value) || 0;
+            const f = parseFloat(document.getElementById('wt-f').value) || 0.4;
+            const e = parseFloat(document.getElementById('wt-e').value) || 1;
+            const t = parseFloat(document.getElementById('wt-t').value) || 1;
+            const corrAllowMm = parseFloat(document.getElementById('wt-corr').value) || 1.5;
+            const testFactor = parseFloat(document.getElementById('wt-test-factor').value) || 1.5;
+
+            if (!nps || od === 0) return;
+
+            const dpPsi = dpBar * 14.5038;
+            const tMinInch = dpPsi * od / (2 * smysPsi * f * e * t);
+            const tMinMm = tMinInch * 25.4;
+            const tReqMm = tMinMm + corrAllowMm;
+            const tReqInch = tReqMm / 25.4;
+
+            document.getElementById('wt-min-mm').value = tMinMm.toFixed(3);
+            document.getElementById('wt-req-mm').value = tReqMm.toFixed(3);
+
+            // Find best schedule
+            let bestSchedule = null;
+            let bestData = null;
+            for (const key in PIPE_DB) {
+                const [npStr, sch] = key.split('|');
+                if (npStr === nps) {
+                    const pipeData = PIPE_DB[key];
+                    if (pipeData.wt_in >= tReqInch) {
+                        if (!bestSchedule || pipeData.wt_in < bestData.wt_in) {
+                            bestSchedule = sch;
+                            bestData = pipeData;
+                        }
+                    }
+                }
+            }
+
+            if (bestSchedule && bestData) {
+                const wtInch = bestData.wt_in;
+                const wtMm = wtInch * 25.4;
+                const idInch = bestData.id_in;
+                const idMm = idInch * 25.4;
+                const weight = bestData.weight_lbft;
+                const weightKgm = bestData.weight_kgm;
+
+                document.getElementById('wt-selected-sch').value = bestSchedule;
+                document.getElementById('wt-selected-wt').value = `${wtInch.toFixed(4)} / ${wtMm.toFixed(2)}`;
+                document.getElementById('wt-selected-id').value = `${idInch.toFixed(3)} / ${idMm.toFixed(1)}`;
+                document.getElementById('wt-selected-weight').value = `${weight.toFixed(2)} / ${weightKgm.toFixed(2)}`;
+
+                // Verify
+                const maopPsi = 2 * smysPsi * wtInch * f * e * t / od;
+                const maopBar = maopPsi / 14.5038;
+                const millTestPsi = 2 * smysPsi * 0.9 * wtInch / od;
+                const fieldTestPsi = maopPsi * testFactor;
+                const fieldOkMill = fieldTestPsi <= millTestPsi ? 'OK' : 'FAIL';
+                const status = maopPsi >= dpPsi ? 'pass' : 'fail';
+
+                document.getElementById('wt-maop').value = maopBar.toFixed(2);
+                document.getElementById('wt-field-test').value = fieldTestPsi.toFixed(0);
+
+                const statusEl = document.getElementById('wt-status');
+                if (status === 'pass') {
+                    statusEl.className = 'status pass';
+                    statusEl.textContent = '✓ PASS';
+                } else {
+                    statusEl.className = 'status fail';
+                    statusEl.textContent = '✗ FAIL';
+                }
+            }
+        }
+
+        // ==================== HOOP STRESS ====================
+        document.getElementById('hs-nps').addEventListener('change', () => {
+            updateScheduleDropdown('hs-nps', 'hs-schedule');
+            updateHsPipeData();
+        });
+        document.getElementById('hs-schedule').addEventListener('change', updateHsPipeData);
+        document.getElementById('hs-grade').addEventListener('change', updateHsPipeData);
+        document.getElementById('hs-wt').addEventListener('input', calculateHoopStress);
+        document.getElementById('hs-op-pres').addEventListener('input', calculateHoopStress);
+        document.getElementById('hs-dp-pres').addEventListener('input', calculateHoopStress);
+
+        function updateHsPipeData() {
+            const nps = document.getElementById('hs-nps').value;
+            const sch = document.getElementById('hs-schedule').value;
+            if (!nps || !sch) return;
+
+            const key = `${nps}|${sch}`;
+            const pipeData = PIPE_DB[key];
+            if (!pipeData) return;
+
+            document.getElementById('hs-od').value = pipeData.od_in.toFixed(3);
+            document.getElementById('hs-wt').value = pipeData.wt_in.toFixed(4);
+
+            const grade = document.getElementById('hs-grade').value;
+            const smys = smysMap[grade];
+            document.getElementById('hs-smys').value = smys;
+
+            calculateHoopStress();
+        }
+
+        function calculateHoopStress() {
+            const od = parseFloat(document.getElementById('hs-od').value) || 0;
+            const wt = parseFloat(document.getElementById('hs-wt').value) || 0;
+            const smysPsi = parseFloat(document.getElementById('hs-smys').value) || 46000;
+            const opBar = parseFloat(document.getElementById('hs-op-pres').value) || 30;
+            const dpBar = parseFloat(document.getElementById('hs-dp-pres').value) || 51;
+
+            if (od === 0 || wt === 0) return;
+
+            const opPsi = opBar * 14.5038;
+            const dpPsi = dpBar * 14.5038;
+
+            // Hoop stress @ OP
+            const sigmaOpPsi = opPsi * od / (2 * wt);
+            const sigmaOpMpa = sigmaOpPsi * 0.006895;
+            const pctSmysOp = (sigmaOpPsi / smysPsi) * 100;
+            const sfOp = smysPsi / sigmaOpPsi;
+
+            // Hoop stress @ DP
+            const sigmaDpPsi = dpPsi * od / (2 * wt);
+            const sigmaDpMpa = sigmaDpPsi * 0.006895;
+            const pctSmysDp = (sigmaDpPsi / smysPsi) * 100;
+            const sfDp = smysPsi / sigmaDpPsi;
+
+            document.getElementById('hs-sigma-op-psi').value = sigmaOpPsi.toFixed(0);
+            document.getElementById('hs-sigma-op-mpa').value = sigmaOpMpa.toFixed(1);
+            document.getElementById('hs-pct-op').value = pctSmysOp.toFixed(1);
+            document.getElementById('hs-sf-op').value = sfOp.toFixed(2);
+
+            document.getElementById('hs-sigma-dp-psi').value = sigmaDpPsi.toFixed(0);
+            document.getElementById('hs-sigma-dp-mpa').value = sigmaDpMpa.toFixed(1);
+            document.getElementById('hs-pct-dp').value = pctSmysDp.toFixed(1);
+            document.getElementById('hs-sf-dp').value = sfDp.toFixed(2);
+
+            // Stress limit table
+            const classes = [
+                {name: 'Class 1 Div 1', f: 0.8},
+                {name: 'Class 1 Div 2', f: 0.72},
+                {name: 'Class 2', f: 0.6},
+                {name: 'Class 3', f: 0.5},
+                {name: 'Class 4', f: 0.4}
+            ];
+
+            let tableHtml = '';
+            classes.forEach(cls => {
+                const maxAllow = smysPsi * cls.f;
+                const checkOp = sigmaOpPsi <= maxAllow ? '<span style="color:#10b981;font-weight:600;">✓ PASS</span>' : '<span style="color:#ef4444;font-weight:600;">✗ FAIL</span>';
+                const checkDp = sigmaDpPsi <= maxAllow ? '<span style="color:#10b981;font-weight:600;">✓ PASS</span>' : '<span style="color:#ef4444;font-weight:600;">✗ FAIL</span>';
+                tableHtml += `<tr>
+                    <td>${cls.name}</td>
+                    <td>${cls.f.toFixed(2)}</td>
+                    <td>${maxAllow.toFixed(0)}</td>
+                    <td>${checkOp}</td>
+                    <td>${checkDp}</td>
+                </tr>`;
+            });
+            document.getElementById('hs-stress-table').innerHTML = tableHtml;
+        }
+
+        // ==================== CATHODIC PROTECTION ====================
+        const coatingData = {
+            'FBE': {fi:0.005, ff:0.05, eps:780},
+            '3LPE': {fi:0.003, ff:0.03, eps:1230},
+            '3LPP': {fi:0.002, ff:0.02, eps:1100},
+            'CTE': {fi:0.02, ff:0.1, eps:780},
+            'AE': {fi:0.05, ff:0.15, eps:780}
+        };
+
+        const anodeData = {
+            'Zn': {eoa:-1.1, eps:780, L:1.5, D:0.127},
+            'MgStd': {eoa:-1.55, eps:1230, L:1.5, D:0.127},
+            'MgHP': {eoa:-1.75, eps:1100, L:1.5, D:0.127}
+        };
+
+        document.getElementById('cp-coating').addEventListener('change', () => {
+            const coating = document.getElementById('cp-coating').value;
+            const data = coatingData[coating];
+            if (data) {
+                document.getElementById('cp-fi').value = data.fi.toFixed(4);
+                document.getElementById('cp-ff').value = data.ff.toFixed(4);
+                calculateCP();
+            }
+        });
+        document.getElementById('cp-od').addEventListener('input', calculateCP);
+        document.getElementById('cp-length').addEventListener('input', calculateCP);
+        document.getElementById('cp-fi').addEventListener('input', calculateCP);
+        document.getElementById('cp-ff').addEventListener('input', calculateCP);
+        document.getElementById('cp-life').addEventListener('input', calculateCP);
+        document.getElementById('cp-rho').addEventListener('input', calculateCP);
+        document.getElementById('cp-j').addEventListener('input', calculateCP);
+        document.getElementById('cp-ep').addEventListener('input', calculateCP);
+        document.getElementById('cp-u').addEventListener('input', calculateCP);
+        document.getElementById('cp-spacing').addEventListener('input', calculateCP);
+        document.getElementById('cp-anode').addEventListener('change', calculateCP);
+
+        function calculateCP() {
+            const od = parseFloat(document.getElementById('cp-od').value) || 16;
+            const length = parseFloat(document.getElementById('cp-length').value) || 10000;
+            const fi = parseFloat(document.getElementById('cp-fi').value) || 0.003;
+            const ff = parseFloat(document.getElementById('cp-ff').value) || 0.03;
+            const life = parseFloat(document.getElementById('cp-life').value) || 30;
+            const rho = parseFloat(document.getElementById('cp-rho').value) || 5000;
+            const j = parseFloat(document.getElementById('cp-j').value) || 20;
+            const ep = parseFloat(document.getElementById('cp-ep').value) || -0.85;
+            const u = parseFloat(document.getElementById('cp-u').value) || 0.8;
+            const spacing = parseFloat(document.getElementById('cp-spacing').value) || 500;
+            const anodeType = document.getElementById('cp-anode').value || 'MgHP';
+
+            const odM = od * 0.0254;
+            const area = Math.PI * odM * length;
+            const fm = (fi + ff) / 2;
+            const ii = area * fi * j;
+            const iif = area * ff * j;
+
+            document.getElementById('cp-area').value = area.toFixed(1);
+            document.getElementById('cp-ii').value = ii.toFixed(0);
+            document.getElementById('cp-if').value = iif.toFixed(0);
+
+            const anode = anodeData[anodeType];
+            const rhom = rho / 100;
+            const ra = (rhom / (2 * Math.PI * anode.L)) * (Math.log(4 * anode.L / anode.D) - 1);
+            const dv = Math.abs(anode.eoa - ep);
+            const ia = dv / ra;
+            const iifA = iif / 1000;
+
+            const nCurrent = Math.ceil(iifA / ia);
+            const nSpacing = Math.ceil(length / spacing);
+            const n = Math.max(nCurrent, nSpacing);
+            const anodeSpacing = length / n;
+            const wAnode = (iifA * life * 8760) / (anode.eps * u * n);
+            const totalWeight = wAnode * n;
+            const anodeLife = (wAnode * anode.eps * u) / (ia * 8760);
+            const statusAnode = anodeLife >= life ? 'pass' : 'fail';
+
+            document.getElementById('cp-ra').value = ra.toFixed(2);
+            document.getElementById('cp-ia').value = ia.toFixed(3);
+            document.getElementById('cp-n-anodes').value = n.toFixed(0);
+            document.getElementById('cp-anode-spacing').value = anodeSpacing.toFixed(0);
+            document.getElementById('cp-total-weight').value = totalWeight.toFixed(0);
+            document.getElementById('cp-anode-life').value = anodeLife.toFixed(1);
+
+            const statusEl = document.getElementById('cp-status');
+            if (statusAnode === 'pass') {
+                statusEl.className = 'status pass';
+                statusEl.textContent = '✓ PASS';
+            } else {
+                statusEl.className = 'status fail';
+                statusEl.textContent = '✗ FAIL';
+            }
+        }
+
+        // ==================== PSV SIZING ====================
+        const orificeTable = {
+            'D': 71, 'E': 126, 'F': 198, 'G': 325, 'H': 506, 'J': 830, 'K': 1186, 'L': 1841, 'M': 2323, 'N': 2800, 'P': 4116
+        };
+
+        document.getElementById('psv-ps').addEventListener('input', calculatePSV);
+        document.getElementById('psv-pb').addEventListener('input', calculatePSV);
+        document.getElementById('psv-temp').addEventListener('input', calculatePSV);
+        document.getElementById('psv-op').addEventListener('input', calculatePSV);
+        document.getElementById('psv-w').addEventListener('input', calculatePSV);
+        document.getElementById('psv-m').addEventListener('input', calculatePSV);
+        document.getElementById('psv-k').addEventListener('input', calculatePSV);
+        document.getElementById('psv-z').addEventListener('input', calculatePSV);
+        document.getElementById('psv-kd').addEventListener('input', calculatePSV);
+        document.getElementById('psv-kb').addEventListener('input', calculatePSV);
+        document.getElementById('psv-kc').addEventListener('input', calculatePSV);
+        document.getElementById('psv-rupture').addEventListener('change', calculatePSV);
+        document.getElementById('psv-orifice').addEventListener('change', calculatePSV);
+
+        function calculatePSV() {
+            const ps = parseFloat(document.getElementById('psv-ps').value) || 30;
+            const pb = parseFloat(document.getElementById('psv-pb').value) || 1.013;
+            const tempC = parseFloat(document.getElementById('psv-temp').value) || 60;
+            const op = parseFloat(document.getElementById('psv-op').value) || 10;
+            const w = parseFloat(document.getElementById('psv-w').value) || 5000;
+            const m = parseFloat(document.getElementById('psv-m').value) || 17.4;
+            const k = parseFloat(document.getElementById('psv-k').value) || 1.3;
+            const z = parseFloat(document.getElementById('psv-z').value) || 0.98;
+            const kd = parseFloat(document.getElementById('psv-kd').value) || 0.975;
+            const kb = parseFloat(document.getElementById('psv-kb').value) || 1;
+            const kc = parseFloat(document.getElementById('psv-kc').value) || 1;
+            const rupture = document.getElementById('psv-rupture').checked;
+
+            const p1bara = ps * (1 + op/100) + 1.013;
+            const p1psia = p1bara * 14.504;
+            const t1r = (tempC + 273.15) * 1.8;
+            const rc = Math.pow(2/(k+1), k/(k-1));
+            const pbRatio = pb / p1bara;
+            const flowCond = pbRatio < rc ? 'Critical (sonic)' : 'Subcritical';
+            const c = 520 * Math.sqrt(k * Math.pow(2/(k+1), (k+1)/(k-1)));
+            const kcEff = rupture ? 0.9 : kc;
+            const wLbh = w * 2.20462;
+            const aIn2 = (wLbh / (c * kd * p1psia * kb * kcEff)) * Math.sqrt(t1r * z / m);
+            const aMm2 = aIn2 * 645.16;
+
+            document.getElementById('psv-p1-psia').value = p1psia.toFixed(0);
+            document.getElementById('psv-flow-cond').value = flowCond;
+            document.getElementById('psv-area-req').value = aMm2.toFixed(0);
+
+            const orifice = document.getElementById('psv-orifice').value;
+            const areaSelected = orificeTable[orifice];
+            const utilPct = (aMm2 / areaSelected) * 100;
+            const margin = 100 - utilPct;
+            const wRated = w * Math.sqrt(areaSelected / aMm2);
+            const status = areaSelected >= aMm2 ? 'pass' : 'fail';
+
+            document.getElementById('psv-area-sel').value = areaSelected;
+            document.getElementById('psv-util-pct').value = utilPct.toFixed(1);
+            document.getElementById('psv-rated-cap').value = wRated.toFixed(0);
+
+            const statusEl = document.getElementById('psv-status');
+            if (status === 'pass') {
+                statusEl.className = 'status pass';
+                statusEl.textContent = '✓ PASS';
+            } else {
+                statusEl.className = 'status fail';
+                statusEl.textContent = '✗ FAIL';
+            }
+        }
+
+        // ==================== LNG BOR ====================
+        const tankData = {
+            'V60': {vol:62765, heat:167},
+            'V50': {vol:47412, heat:148},
+            'V20': {vol:19189, heat:78},
+            'ISO': {vol:45400, heat:110.8}
+        };
+
+        document.getElementById('bor-tank-type').addEventListener('change', () => {
+            const type = document.getElementById('bor-tank-type').value;
+            const data = tankData[type];
+            if (data) {
+                document.getElementById('bor-volume').value = data.vol;
+                document.getElementById('bor-heat').value = data.heat;
+                calculateBOR();
+            }
+        });
+        document.getElementById('bor-volume').addEventListener('input', calculateBOR);
+        document.getElementById('bor-heat').addEventListener('input', calculateBOR);
+        document.getElementById('bor-fill').addEventListener('input', calculateBOR);
+        document.getElementById('bor-density').addEventListener('input', calculateBOR);
+        document.getElementById('bor-lh').addEventListener('input', calculateBOR);
+        document.getElementById('bor-mawp').addEventListener('input', calculateBOR);
+
+        function calculateBOR() {
+            const volL = parseFloat(document.getElementById('bor-volume').value) || 45400;
+            const q = parseFloat(document.getElementById('bor-heat').value) || 110.8;
+            const fill = parseFloat(document.getElementById('bor-fill').value) || 90;
+            const density = parseFloat(document.getElementById('bor-density').value) || 450;
+            const lh = parseFloat(document.getElementById('bor-lh').value) || 510;
+            const mawp = parseFloat(document.getElementById('bor-mawp').value) || 10;
+
+            const lngVolL = volL * fill / 100;
+            const lngVolM3 = lngVolL / 1000;
+            const lngMass = lngVolM3 * density;
+
+            const dailyHeatKj = q * 86400 / 1000;
+            const dailyBoilKg = dailyHeatKj / lh;
+            const hourlyBoilKg = dailyBoilKg / 24;
+            const dailyBoilL = dailyBoilKg / density * 1000;
+
+            const borPctDay = (dailyBoilKg / lngMass) * 100;
+
+            const ullagM3 = (volL / 1000) * (1 - fill/100);
+            const mwNg = 17.4;
+            const r = 8.314;
+            const tK = 15 + 273.15;
+            const pmawpKpa = (mawp + 1.01325) * 100;
+            const ullageMassKg = pmawpKpa * ullagM3 * mwNg / (r * tK);
+
+            const holdingDays = ullageMassKg / dailyBoilKg;
+            const days = Math.floor(holdingDays);
+            const hours = Math.round((holdingDays - days) * 24);
+
+            document.getElementById('bor-daily-kg').value = dailyBoilKg.toFixed(2);
+            document.getElementById('bor-hourly-kg').value = hourlyBoilKg.toFixed(3);
+            document.getElementById('bor-daily-litre').value = dailyBoilL.toFixed(1);
+            document.getElementById('bor-rate-pct').value = borPctDay.toFixed(3);
+            document.getElementById('bor-lng-mass').value = lngMass.toFixed(0);
+            document.getElementById('bor-hold-days').value = holdingDays.toFixed(1);
+            document.getElementById('bor-hold-dh').value = `${days}d ${hours}h`;
+        }
+
+        // ==================== REMAINING LIFE ====================
+        document.getElementById('rl-method').addEventListener('change', () => {
+            const method = document.getElementById('rl-method').value;
+            document.getElementById('rl-direct-section').style.display = method === 'direct' ? 'block' : 'none';
+            document.getElementById('rl-inspect-section').style.display = method === 'inspect' ? 'block' : 'none';
+            calculateRemainingLife();
+        });
+        document.getElementById('rl-od').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-t-nom').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-maop').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-smys').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-f').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-e').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-t').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-t-act').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-cr').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-install-date').addEventListener('change', calculateRemainingLife);
+        document.getElementById('rl-insp1-date').addEventListener('change', calculateRemainingLife);
+        document.getElementById('rl-t1').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-insp2-date').addEventListener('change', calculateRemainingLife);
+        document.getElementById('rl-t2').addEventListener('input', calculateRemainingLife);
+        document.getElementById('rl-defect-len').addEventListener('input', calculateRemainingLife);
+
+        function calculateRemainingLife() {
+            const odMm = parseFloat(document.getElementById('rl-od').value) || 323.9;
+            const tNom = parseFloat(document.getElementById('rl-t-nom').value) || 9.53;
+            const maop = parseFloat(document.getElementById('rl-maop').value) || 20;
+            const smysMpa = parseFloat(document.getElementById('rl-smys').value) || 359;
+            const f = parseFloat(document.getElementById('rl-f').value) || 0.5;
+            const e = parseFloat(document.getElementById('rl-e').value) || 1;
+            const tDerating = parseFloat(document.getElementById('rl-t').value) || 1;
+            const defectLen = parseFloat(document.getElementById('rl-defect-len').value) || 0;
+
+            // Min required thickness
+            const odInch = odMm / 25.4;
+            const smysPsi = smysMpa / 0.006895;
+            const maopPsi = maop * 14.5038;
+            const tReqInch = maopPsi * odInch / (2 * smysPsi * f * e * tDerating);
+            const tReqMm = tReqInch * 25.4;
+            document.getElementById('rl-t-req').value = tReqMm.toFixed(3);
+
+            // Corrosion rate
+            const method = document.getElementById('rl-method').value;
+            let tAct, cr;
+            if (method === 'direct') {
+                tAct = parseFloat(document.getElementById('rl-t-act').value) || 8.2;
+                cr = parseFloat(document.getElementById('rl-cr').value) || 0.15;
+            } else {
+                const installDate = new Date(document.getElementById('rl-install-date').value);
+                const insp1Date = new Date(document.getElementById('rl-insp1-date').value);
+                const insp2Date = new Date(document.getElementById('rl-insp2-date').value);
+                const t1 = parseFloat(document.getElementById('rl-t1').value) || 8.5;
+                const t2 = parseFloat(document.getElementById('rl-t2').value) || 8.2;
+
+                tAct = t2;
+                const dt1 = (insp2Date - insp1Date) / (1000 * 86400 * 365.25);
+                const dt2 = (insp2Date - installDate) / (1000 * 86400 * 365.25);
+                const crShort = (t1 - t2) / (dt1 || 1);
+                const crLong = (tNom - t2) / (dt2 || 1);
+                cr = Math.max(crShort, crLong);
+            }
+
+            document.getElementById('rl-cr-used').value = cr.toFixed(4);
+
+            const remAllow = tAct - tReqMm;
+            const remLife = cr > 0 ? remAllow / cr : 999;
+            const retireDate = new Date(Date.now() + remLife * 365.25 * 86400000);
+            const retireDateStr = remLife < 999 ? retireDate.toISOString().split('T')[0] : 'N/A';
+
+            document.getElementById('rl-rem-allow').value = remAllow.toFixed(3);
+            document.getElementById('rl-rem-life').value = remLife.toFixed(1);
+            document.getElementById('rl-retire-date').value = retireDateStr;
+
+            // B31G Modified
+            let rsf, pSafe, b31gStatus;
+            if (defectLen > 0) {
+                const dWall = tNom - tAct;
+                const dRatio = dWall / tAct;
+                const z = (defectLen * defectLen) / (odMm * tNom);
+                const m = z <= 50 ? Math.sqrt(1 + 0.6275*z - 0.003375*z*z) : Math.sqrt(0.032*z + 3.3);
+                rsf = (1 - dRatio) / (1 - dRatio/m);
+                pSafe = rsf < 1 ? rsf * maop : maop;
+                b31gStatus = rsf >= 1 ? 'PASS ✅' : 'CAUTION ⚠️ (Reduced)';
+            } else {
+                rsf = 1;
+                pSafe = maop;
+                b31gStatus = 'No defect - Assessment not performed';
+            }
+
+            document.getElementById('rl-rsf').value = rsf.toFixed(3);
+            document.getElementById('rl-p-safe').value = pSafe.toFixed(2);
+            document.getElementById('rl-b31g-status').value = b31gStatus;
+
+            // Next inspection
+            let nextInsp;
+            if (remLife > 10) nextInsp = 'Within 5 years';
+            else if (remLife > 0) nextInsp = `Within ${(remLife/2).toFixed(1)} years`;
+            else nextInsp = 'Immediate inspection required';
+            document.getElementById('rl-next-insp').value = nextInsp;
+        }
+    </script>
+</body>
+</html>
