@@ -187,25 +187,31 @@
             box-shadow: 0 0 0 3px rgba(26,86,219,.12);
         }
 
-        .input-field {
+        input.input-field,
+        select.input-field {
             background: #f0f6ff;
             border-color: #93c5fd;
         }
-        .output-field {
+        input.output-field,
+        select.output-field {
             background: var(--green-light);
             border-color: #6ee7b7;
             color: var(--green); font-weight: 600;
         }
-        .output-field:read-only { cursor: default; }
-        .output-field:disabled {
+        input.output-field:read-only,
+        select.output-field:read-only { cursor: default; }
+        input.output-field:disabled,
+        select.output-field:disabled {
             background: var(--green-light);
             color: var(--green); opacity: 1;
         }
-        .info-field {
+        input.info-field,
+        select.info-field {
             background: var(--gray-100); border-color: var(--gray-200);
             color: var(--gray-600);
         }
-        .info-field:disabled { background: var(--gray-100); opacity: 1; }
+        input.info-field:disabled,
+        select.info-field:disabled { background: var(--gray-100); opacity: 1; }
 
         select.input-field { padding: 0 32px 0 12px; }
 
