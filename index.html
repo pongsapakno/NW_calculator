@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NW Engineering · Gas Network Calculation Tools</title>
+<link rel="apple-touch-icon" sizes="180x180" href="nw-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="nw-icon.png">
+<link rel="icon" type="image/png" href="nw-icon.png">
+<meta name="apple-mobile-web-app-title" content="NW Calc">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0f3; --surface:#ffffff; --ink:#13161c; --muted:#5b6472;
+    --line:#e3e6ec; --line-strong:#d3d8e1;
+    --accent:#3a45d6; --accent-ink:#2a32a8; --accent-soft:#eceefb;
+    --ok:#0f9d6a; --warn:#b07815; --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:var(--sans);background:var(--bg);color:var(--ink);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:32px 32px;background-position:-1px -1px;
+  }
+  .shell{max-width:920px;margin:0 auto;padding:40px 24px 56px;}
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .mark{width:38px;height:38px;flex-shrink:0;}
+  .brand-name{font-weight:600;font-size:15px;letter-spacing:-0.01em;}
+  .brand-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.02em;}
+  .vchip{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--accent-ink);
+    background:var(--accent-soft);border:1px solid #d6daf7;padding:5px 10px;border-radius:6px;}
+  /* hero */
+  .hero{margin-bottom:36px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .eyebrow::before{content:"";width:24px;height:1.5px;background:var(--accent);display:inline-block;}
+  h1{font-size:34px;font-weight:600;letter-spacing:-0.025em;line-height:1.1;margin-bottom:12px;max-width:18ch;}
+  .lede{font-size:15px;color:var(--muted);line-height:1.55;max-width:54ch;}
+  .lede .th{font-size:13.5px;display:block;margin-top:4px;}
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:1fr;gap:14px;margin-top:36px;}
+  .tile{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;text-decoration:none;color:inherit;
+    transition:border-color .18s,box-shadow .18s,transform .18s;position:relative;overflow:hidden;}
+  .tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tint,var(--accent));
+    opacity:0;transition:opacity .18s;}
+  .tile:hover{border-color:var(--line-strong);box-shadow:0 8px 28px -12px rgba(20,24,40,.18);transform:translateY(-1px);}
+  .tile:hover::before{opacity:1;}
+  .ticon{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;
+    background:var(--tint-soft,var(--accent-soft));color:var(--tint,var(--accent));}
+  .ticon svg{width:24px;height:24px;}
+  .tbody h2{font-size:16px;font-weight:600;letter-spacing:-0.01em;margin-bottom:3px;}
+  .tbody p{font-size:13px;color:var(--muted);line-height:1.45;}
+  .tmeta{display:flex;align-items:center;gap:16px;}
+  .tcount{text-align:right;}
+  .tcount b{font-family:var(--mono);font-size:20px;font-weight:600;display:block;line-height:1;}
+  .tcount span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);}
+  .go{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;
+    color:var(--muted);transition:all .18s;flex-shrink:0;}
+  .tile:hover .go{background:var(--tint,var(--accent));border-color:var(--tint,var(--accent));color:#fff;}
+  .go svg{width:16px;height:16px;}
+  /* footer */
+  .foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+    font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.02em;}
+  .foot a{color:var(--muted);text-decoration:none;}
+  .foot a:hover{color:var(--accent);}
+  @media(max-width:560px){
+    h1{font-size:27px;}
+    .tile{grid-template-columns:auto 1fr;gap:14px;padding:16px 16px;}
+    .tmeta{grid-column:1/-1;justify-content:space-between;padding-top:12px;margin-top:2px;border-top:1px solid var(--line);}
+    .tcount{text-align:left;}
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 38 38" fill="none">
+          <rect x="0.5" y="0.5" width="37" height="37" rx="9" fill="#13161c"/>
+          <circle cx="11" cy="11" r="2.4" fill="#fff"/>
+          <circle cx="27" cy="11" r="2.4" fill="#7c84f0"/>
+          <circle cx="11" cy="27" r="2.4" fill="#7c84f0"/>
+          <circle cx="27" cy="27" r="2.4" fill="#fff"/>
+          <circle cx="19" cy="19" r="2.4" fill="#3a45d6"/>
+          <path d="M11 11 19 19 27 11M11 27 19 19 27 27M19 11.5V19" stroke="#5b6472" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="brand-name">NW Engineering</div>
+          <div class="brand-sub">Gas Network Tools</div>
+        </div>
+      </div>
+      <div class="vchip">v5.1</div>
+    </div>
+
+    <div class="hero">
+      <div class="eyebrow">Calculation Suite</div>
+      <h1>Engineering calculation tools for gas network design.</h1>
+      <p class="lede">Pressure, flow, pipe integrity and LNG conversions — built to PED &amp; ASME references in one workspace.
+        <span class="th">เครื่องมือคำนวณงานวิศวกรรมระบบก๊าซ</span>
+      </p>
+    </div>
+
+    <div class="tiles">
+      <a class="tile" href="NW_Calculator.html" style="--tint:#3a45d6;--tint-soft:#eceefb;">
+        <span class="ticon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12M15 9V3"/>
+          </svg>
+        </span>
+        <div class="tbody">
+          <h2>Full Version</h2>
+          <p>The complete toolkit for desktop &amp; tablet — every calculation module.</p>
+        </div>
+        <div class="tmeta">
+          <div class="tcount"><b>17</b><span>tabs</span></div>
+          <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="tile" href="NW_Calc_Essential.html" style="--tint:#0f9d6a;--tint-soft:#e7f5ee;">
+        <span class="ticon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </span>
+        <div class="tbody">
+          <h2>Essential Version</h2>
+          <p>The ten core modules, streamlined and lightweight for everyday work.</p>
+        </div>
+        <div class="tmeta">
+          <div class="tcount"><b>10</b><span>tabs</span></div>
+          <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="tile" href="NW_Calc_Mobile.html" style="--tint:#b07815;--tint-soft:#f6efe1;">
+        <span class="ticon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>
+          </svg>
+        </span>
+        <div class="tbody">
+          <h2>Mobile Version</h2>
+          <p>Optimised for smartphones — full-width inputs and tap-friendly controls.</p>
+        </div>
+        <div class="tmeta">
+          <div class="tcount"><b>10</b><span>tabs</span></div>
+          <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="foot">
+      <span>NW Engineering · Gas Network Tools</span>
+      <span>Version 5.1</span>
+    </div>
+  </div>
+</body>
+</html>
